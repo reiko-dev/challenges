@@ -32,8 +32,8 @@ class HomePage extends StatelessWidget {
         color: Colors.black,
         child: Center(
           child: Container(
-            width: 604,
-            height: 404,
+            width: 804,
+            height: 604,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white, width: 2),
             ),

@@ -69,15 +69,22 @@ class DFTPainter extends CustomPainter {
     var signalX = [];
     var signalY = [];
 
-    int skip = 20;
+    int skip = 30;
 
     for (int i = 0; i < drawing.length; i += skip) {
       signalX.add(drawing[i]['x']);
       signalY.add(drawing[i]['y']);
+      // signalX.add(0);
+      // signalY.add(0);
     }
 
     var fourierX = dft(signalX);
     var fourierY = dft(signalY);
+
+    // fourierX.sort((a, b) => b['amp'] - a['amp']);
+    // fourierY.sort((a, b) => b['amp'] - a['amp']);
+    fourierX.sort((a, b) => b['amp'].compareTo(a['amp']));
+    fourierY.sort((a, b) => b['amp'].compareTo(a['amp']));
 
     draw(fourierX, fourierY, canvas);
   }
@@ -118,8 +125,8 @@ class DFTPainter extends CustomPainter {
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
 
-    var vx = epiCycles(300, 50, 0, fourierX, canvas);
-    var vy = epiCycles(50, 200, pi / 2, fourierY, canvas);
+    var vx = epiCycles(450, 75, 0, fourierX, canvas);
+    var vy = epiCycles(100, 400, pi / 2, fourierY, canvas);
     var v = [vx[0], vy[1]];
 
     // double x = 0, y = 0;
@@ -145,9 +152,13 @@ class DFTPainter extends CustomPainter {
 
     final dt = 2 * pi / fourierY.length;
     time += dt;
-    animationController.animateTo(time);
-
-    // if (path.length > 250) path.removeLast();
+    if (time > 2 * pi) {
+      time = 0;
+      path = [];
+      animationController.stop();
+    } else {
+      animationController.animateTo(time);
+    }
   }
 
   @override
