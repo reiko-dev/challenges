@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/dft_algorithm.dart';
+import 'package:fourier_series/fourier_painters/drawing.dart';
 
 class DiscreteFourierTransform extends StatefulWidget {
   @override
@@ -60,38 +61,43 @@ class DFTPainter extends CustomPainter {
 
   static double time = 0;
   static final rand = Random();
-  static var wave = [];
+  static var path = [];
 
   @override
   void paint(Canvas canvas, Size size) {
     //This is the signal, any arbitrary digital signal/array of numbers
-    var signal = [];
+    var signalX = [];
+    var signalY = [];
 
-    for (int i = 0; i < 100; i++) {
-      signal.add(2 * i);
+    int skip = 20;
+
+    for (int i = 0; i < drawing.length; i += skip) {
+      signalX.add(drawing[i]['x']);
+      signalY.add(drawing[i]['y']);
     }
 
-    var fourierY = dft(signal);
+    var fourierX = dft(signalX);
+    var fourierY = dft(signalY);
 
+    draw(fourierX, fourierY, canvas);
+  }
+
+  List<double> epiCycles(
+      double x, double y, double rotation, fourier, Canvas canvas) {
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
 
-    canvas.translate(150, 200);
-
-    double x = 0;
-    double y = 0;
-
-    for (int i = 0; i < fourierY.length; i++) {
+    for (int i = 0; i < fourier.length; i++) {
       double prevX = x;
       double prevY = y;
 
-      int freq = fourierY[i]['freq'];
-      double radius = fourierY[i]['amp'];
-      double phase = fourierY[i]['phase'];
+      int freq = fourier[i]['freq'];
+      double radius = fourier[i]['amp'];
+      double phase = fourier[i]['phase'];
 
-      x += radius * cos(freq * time + phase + pi / 2);
-      y += radius * sin(freq * time + phase + pi / 2);
+      x += radius * cos(freq * time + phase + rotation);
+      y += radius * sin(freq * time + phase + rotation);
 
       ///Draws the circles
       paint
@@ -104,28 +110,44 @@ class DFTPainter extends CustomPainter {
       canvas.drawLine(Offset(prevX, prevY), Offset(x, y), paint);
     }
 
+    return [x, y];
+  }
+
+  draw(fourierX, fourierY, canvas) {
+    Paint paint = Paint()
+      ..color = Colors.white.withAlpha(100)
+      ..style = PaintingStyle.stroke;
+
+    var vx = epiCycles(300, 50, 0, fourierX, canvas);
+    var vy = epiCycles(50, 200, pi / 2, fourierY, canvas);
+    var v = [vx[0], vy[1]];
+
+    // double x = 0, y = 0;
+
     //unshift
-    wave.insert(0, y);
+    path.insert(0, v);
 
     //Moves the wave a bit to the left
-    canvas.translate(200, 0);
-    canvas.drawLine(Offset(x - 200, y), Offset(0, wave.first), paint);
+    // canvas.translate(200, 0);
+    // canvas.drawLine(Offset(x - 200, y), Offset(0, path.first), paint);
+    canvas.drawLine(Offset(vx[0], vx[1]), Offset(v[0], v[1]), paint);
+    canvas.drawLine(Offset(vy[0], vy[1]), Offset(v[0], v[1]), paint);
 
     // begin shape
-    Path path = Path()..moveTo(0, wave.first);
+    Path pathToDraw = Path()..moveTo(0, path.first[1]);
     paint.style = PaintingStyle.stroke;
 
-    for (int i = 0; i < wave.length; i++) {
-      path.lineTo(i.toDouble(), wave[i]);
+    for (int i = 0; i < path.length; i++) {
+      pathToDraw.lineTo(path[i][0].toDouble(), path[i][1]);
     }
     // canvas.translate(150, )
-    canvas.drawPath(path, paint);
+    canvas.drawPath(pathToDraw, paint);
 
     final dt = 2 * pi / fourierY.length;
     time += dt;
     animationController.animateTo(time);
 
-    if (wave.length > 250) wave.removeLast();
+    // if (path.length > 250) path.removeLast();
   }
 
   @override
