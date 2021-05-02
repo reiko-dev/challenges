@@ -21,12 +21,6 @@ class _FourierSquaresPainterState extends State<FourierSquaresPainter>
       upperBound: 1,
       vsync: this,
     );
-    controller.forward();
-    controller.addStatusListener(
-      (status) {
-        if (status == AnimationStatus.completed) controller.repeat();
-      },
-    );
   }
 
   onChanged(double value) {
@@ -41,8 +35,8 @@ class _FourierSquaresPainterState extends State<FourierSquaresPainter>
         AnimatedBuilder(
           animation: controller,
           builder: (_, __) => CustomPaint(
-            painter: PaintSquaresUsingFourierSeries(
-              controllerValue: controller.value,
+            painter: _PaintSquaresUsingFourierSeries(
+              controllerValue: controller,
               numberOfCircles: numberOfCircles.floor(),
             ),
           ),
@@ -79,17 +73,20 @@ class _FourierSquaresPainterState extends State<FourierSquaresPainter>
   }
 }
 
-class PaintSquaresUsingFourierSeries extends CustomPainter {
-  final double controllerValue;
+class _PaintSquaresUsingFourierSeries extends CustomPainter {
+  final AnimationController controllerValue;
   final int numberOfCircles;
-  static var wave = [];
+  static var time = 0.0;
 
-  const PaintSquaresUsingFourierSeries(
+  const _PaintSquaresUsingFourierSeries(
       {required this.controllerValue, required this.numberOfCircles});
 
   @override
   void paint(Canvas canvas, Size size) {
-    double time = controllerValue * 2 * pi;
+    var wave = [];
+    time += 0.025;
+
+    controllerValue.animateTo(time);
 
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fourier_series/fourier_painters/dft_algorithm.dart';
 
 class DiscreteFourierTransform extends StatefulWidget {
   @override
@@ -20,12 +21,6 @@ class _DiscreteFourierTransformState extends State<DiscreteFourierTransform>
       upperBound: 1,
       vsync: this,
     );
-    controller.forward();
-    controller.addStatusListener(
-      (status) {
-        if (status == AnimationStatus.completed) controller.repeat();
-      },
-    );
   }
 
   @override
@@ -35,10 +30,7 @@ class _DiscreteFourierTransformState extends State<DiscreteFourierTransform>
         AnimatedBuilder(
           animation: controller,
           builder: (_, __) => CustomPaint(
-            painter: DFTPainter(
-              controllerValue: controller.value,
-              numberOfCircles: 5,
-            ),
+            painter: DFTPainter(controller),
           ),
         ),
         Positioned(
@@ -63,16 +55,23 @@ class _DiscreteFourierTransformState extends State<DiscreteFourierTransform>
 }
 
 class DFTPainter extends CustomPainter {
-  final double controllerValue;
-  final int numberOfCircles;
-  static var wave = [];
+  final AnimationController animationController;
+  const DFTPainter(this.animationController);
 
-  const DFTPainter(
-      {required this.controllerValue, required this.numberOfCircles});
+  static double time = 0;
+  static final rand = Random();
+  static var wave = [];
 
   @override
   void paint(Canvas canvas, Size size) {
-    double time = controllerValue * 2 * pi;
+    //This is the signal, any arbitrary digital signal/array of numbers
+    var signal = [];
+
+    for (int i = 0; i < 100; i++) {
+      signal.add(2 * i);
+    }
+
+    var fourierY = dft(signal);
 
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
@@ -83,16 +82,16 @@ class DFTPainter extends CustomPainter {
     double x = 0;
     double y = 0;
 
-    for (int i = 0; i < numberOfCircles; i++) {
+    for (int i = 0; i < fourierY.length; i++) {
       double prevX = x;
       double prevY = y;
 
-      int n = i * 2 + 1;
+      int freq = fourierY[i]['freq'];
+      double radius = fourierY[i]['amp'];
+      double phase = fourierY[i]['phase'];
 
-      double radius = 100 * (4 / (n * pi));
-
-      x += radius * cos(n * time);
-      y += radius * sin(n * time);
+      x += radius * cos(freq * time + phase + pi / 2);
+      y += radius * sin(freq * time + phase + pi / 2);
 
       ///Draws the circles
       paint
@@ -103,10 +102,6 @@ class DFTPainter extends CustomPainter {
       //Draw a line to the center of the next circle.
       paint..style = PaintingStyle.fill;
       canvas.drawLine(Offset(prevX, prevY), Offset(x, y), paint);
-
-      //Draw the circle on the end of the previous line
-      // canvas.drawCircle(Offset(x, y), 4, paint);
-
     }
 
     //unshift
@@ -126,7 +121,11 @@ class DFTPainter extends CustomPainter {
     // canvas.translate(150, )
     canvas.drawPath(path, paint);
 
-    if (wave.length > 350) wave.removeLast();
+    final dt = 2 * pi / fourierY.length;
+    time += dt;
+    animationController.animateTo(time);
+
+    if (wave.length > 250) wave.removeLast();
   }
 
   @override
