@@ -9,7 +9,7 @@ import 'dart:math';
 ///1. Amplitude (the radius)
 ///2. Frequency: how many cycles trough the circle does it rotate per unit of time.
 ///3. Phase: an offset where does this wave pattern begins.
-List<dynamic> dft(x) {
+List<dynamic> dftRealPartAlgorithm(x) {
   List<dynamic> X = [];
 
   final N = x.length;

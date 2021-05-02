@@ -1,15 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/dft_algorithm.dart';
+import 'package:fourier_series/fourier_painters/dft_real_part_algorithm.dart';
 import 'package:fourier_series/fourier_painters/drawing.dart';
 
-class DiscreteFourierTransform extends StatefulWidget {
+class DFTWithTwoEpycicles extends StatefulWidget {
   @override
-  createState() => _DiscreteFourierTransformState();
+  createState() => _DFTWithTwoEpyciclesState();
 }
 
-class _DiscreteFourierTransformState extends State<DiscreteFourierTransform>
+class _DFTWithTwoEpyciclesState extends State<DFTWithTwoEpycicles>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
@@ -78,8 +78,8 @@ class DFTPainter extends CustomPainter {
       // signalY.add(0);
     }
 
-    var fourierX = dft(signalX);
-    var fourierY = dft(signalY);
+    var fourierX = dftRealPartAlgorithm(signalX);
+    var fourierY = dftRealPartAlgorithm(signalY);
 
     // fourierX.sort((a, b) => b['amp'] - a['amp']);
     // fourierY.sort((a, b) => b['amp'] - a['amp']);
