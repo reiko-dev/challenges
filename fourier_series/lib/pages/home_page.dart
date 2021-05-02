@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/fourier_painter.dart';
+import 'package:fourier_series/fourier_painters/discrete_fourier_transform.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage();
@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white, width: 2),
             ),
-            child: FourierSquaresPainter(),
+            child: DiscreteFourierTransform(),
           ),
         ),
       ),
