@@ -4,8 +4,8 @@
 
 
 #To Do
-- [ ] Paint sine waves using the Fourier Series.
+- [ ] Paint square waves using the Fourier Series.
 *The Fourier Transform takes a time-based pattern, measures every possible cycle, and returns the overall "cycle recipe" (the amplitude, offset, & rotation speed for every cycle that was found).
 
-- [ ] Paint coordinates with Fourier Series
-
+- [ ] Paint using the Fourier transform algorithm
+ 
