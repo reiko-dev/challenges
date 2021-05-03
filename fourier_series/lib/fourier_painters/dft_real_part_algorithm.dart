@@ -53,6 +53,13 @@ List<dynamic> dftRealPartAlgorithm(x) {
 /// The input is a map like:
 /// ```dart
 /// {
+///
+///   //skip is the variable that controls the amount of points must to be rendered.
+///   //if skip=1, (1/1) of the entered points will be rendered.
+///   //if skip=2, 1/2 (half) points will be renderd.
+///   //if skip=10, 1/10 points will be renderd.
+///
+///   'skip': 3,
 ///   'drawing': [
 ///     {"x": -75.23920093800275, "y": -9.276916512631997},
 ///     [...]
@@ -77,9 +84,8 @@ Map<String, dynamic> computeDrawingData(Map<String, dynamic> input) {
   var signalX = [];
   var signalY = [];
 
-  int skip = 3;
   final drawing = input['drawing'];
-  for (int i = 0; i < drawing.length; i += skip) {
+  for (int i = 0; i < drawing.length; i += input['skip'] as int) {
     signalX.add(drawing[i]['x']);
     signalY.add(drawing[i]['y']);
   }

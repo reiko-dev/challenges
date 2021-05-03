@@ -18,7 +18,7 @@ class _DFTWithTwoEpyciclesWithComputeState
   bool isLoaded = false;
   Map<String, dynamic> dataToCompute = {
     'drawing': drawing,
-    'skipNumber': 3,
+    'skip': 10,
   };
 
   Future<void> loadData() async {
