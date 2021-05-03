@@ -16,9 +16,19 @@ class _DFTWithTwoEpyciclesWithComputeState
   late final AnimationController controller;
 
   bool isLoaded = false;
-  final Map<String, dynamic> dataToCompute = {
+  Map<String, dynamic> dataToCompute = {
     'drawing': drawing,
+    'skipNumber': 3,
   };
+
+  Future<void> loadData() async {
+    print('started computing');
+    dataToCompute = await compute(computeDrawingData, dataToCompute);
+    isLoaded = true;
+
+    setState(() {});
+    print('finished');
+  }
 
   @override
   void initState() {
@@ -29,22 +39,8 @@ class _DFTWithTwoEpyciclesWithComputeState
       upperBound: 1,
       vsync: this,
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (WidgetsBinding.instance != null) {
-      Future.delayed(Duration.zero).then((value) {
-        compute(computingDrawingData, dataToCompute).then((value) {
-          setState(() {
-            isLoaded = true;
-          });
-          print('BB');
-        });
-      });
-    }
+    loadData();
+    print('initState end');
   }
 
   @override
@@ -53,11 +49,14 @@ class _DFTWithTwoEpyciclesWithComputeState
       children: [
         if (!isLoaded)
           Container(
-            color: Colors.yellow,
-            child: SizedBox(
-              width: 100,
-              height: 30,
-              child: CircularProgressIndicator(),
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(
+              child: SizedBox(
+                width: 100,
+                height: 30,
+                child: CircularProgressIndicator(),
+              ),
             ),
           ),
         if (isLoaded)

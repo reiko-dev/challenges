@@ -72,7 +72,7 @@ List<dynamic> dftRealPartAlgorithm(x) {
 ///   'fourierY': { 'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,}
 /// }
 /// ```
-void computingDrawingData(Map input) {
+Map<String, dynamic> computeDrawingData(Map<String, dynamic> input) {
   //This is the signal, any arbitrary digital signal/array of numbers
   var signalX = [];
   var signalY = [];
@@ -92,4 +92,5 @@ void computingDrawingData(Map input) {
 
   input['fourierX'] = fourierX;
   input['fourierY'] = fourierY;
+  return input;
 }
