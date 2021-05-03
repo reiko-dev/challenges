@@ -48,3 +48,48 @@ List<dynamic> dftRealPartAlgorithm(x) {
 
   return X;
 }
+
+///
+/// The input is a map like:
+/// ```dart
+/// {
+///   'drawing': [
+///     {"x": -75.23920093800275, "y": -9.276916512631997},
+///     [...]
+///     {"x": -75.23920093800275, "y": -9.276916512631997},
+///    ]
+/// }
+/// ```
+/// The input results in the map:
+/// ```dart
+/// {
+///   'drawing': [
+///     {"x": -75.23920093800275, "y": -9.276916512631997},
+///     [...]
+///     {"x": -75.23920093800275, "y": -9.276916512631997},
+///    ],
+///   'fourierX': { 'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,}
+///   'fourierY': { 'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,}
+/// }
+/// ```
+void computingDrawingData(Map input) {
+  //This is the signal, any arbitrary digital signal/array of numbers
+  var signalX = [];
+  var signalY = [];
+
+  int skip = 3;
+  final drawing = input['drawing'];
+  for (int i = 0; i < drawing.length; i += skip) {
+    signalX.add(drawing[i]['x']);
+    signalY.add(drawing[i]['y']);
+  }
+
+  var fourierX = dftRealPartAlgorithm(signalX);
+  var fourierY = dftRealPartAlgorithm(signalY);
+
+  fourierX.sort((a, b) => b['amp'].compareTo(a['amp']));
+  fourierY.sort((a, b) => b['amp'].compareTo(a['amp']));
+
+  input['fourierX'] = fourierX;
+  input['fourierY'] = fourierY;
+}
