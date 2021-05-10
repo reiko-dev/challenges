@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/dft_real_part_algorithm.dart';
-import 'package:fourier_series/fourier_painters/drawing.dart';
 
 class DFTWithTwoEpyciclesWithCompute extends StatefulWidget {
+  const DFTWithTwoEpyciclesWithCompute(this.drawing);
+  final List<Map<String, double>> drawing;
+
   @override
   createState() => _DFTWithTwoEpyciclesWithComputeState();
 }
@@ -16,10 +18,22 @@ class _DFTWithTwoEpyciclesWithComputeState
   late final AnimationController controller;
 
   bool isLoaded = false;
-  Map<String, dynamic> dataToCompute = {
-    'drawing': drawing,
-    'skip': 10,
-  };
+  Map<String, dynamic> dataToCompute = {};
+
+  @override
+  void initState() {
+    super.initState();
+    dataToCompute = {
+      'drawing': widget.drawing,
+      'skip': 5,
+    };
+    controller = AnimationController(
+      duration: Duration(milliseconds: 3500),
+      vsync: this,
+    );
+    loadData();
+    print('initState end');
+  }
 
   Future<void> loadData() async {
     print('started computing');
@@ -28,19 +42,6 @@ class _DFTWithTwoEpyciclesWithComputeState
 
     setState(() {});
     print('finished');
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: Duration(milliseconds: 3500),
-      lowerBound: 0,
-      upperBound: 1,
-      vsync: this,
-    );
-    loadData();
-    print('initState end');
   }
 
   @override
@@ -63,8 +64,11 @@ class _DFTWithTwoEpyciclesWithComputeState
           AnimatedBuilder(
             animation: controller,
             builder: (_, __) => CustomPaint(
-              painter: DFTPainter(controller, dataToCompute['fourierX'],
-                  dataToCompute['fourierY']),
+              painter: DFTPainter(
+                controller,
+                dataToCompute['fourierX'],
+                dataToCompute['fourierY'],
+              ),
             ),
           ),
       ],
@@ -86,8 +90,10 @@ class DFTPainter extends CustomPainter {
     draw(fourierX, fourierY, canvas);
   }
 
-  List<double> epiCycles(
-      double x, double y, double rotation, fourier, Canvas canvas) {
+  Offset epiCycles(Offset position, double rotation, fourier, Canvas canvas) {
+    double x = position.dx;
+    double y = position.dy;
+
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
@@ -106,7 +112,8 @@ class DFTPainter extends CustomPainter {
       ///Draws the circles
       paint
         ..strokeWidth = 2
-        ..style = PaintingStyle.stroke;
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0x20FFFFFF);
       canvas.drawCircle(Offset(prevX, prevY), radius, paint);
 
       //Draw a line to the center of the next circle.
@@ -114,32 +121,37 @@ class DFTPainter extends CustomPainter {
       canvas.drawLine(Offset(prevX, prevY), Offset(x, y), paint);
     }
 
-    return [x, y];
+    return Offset(x, y);
   }
 
-  draw(fourierX, fourierY, canvas) {
+  draw(fourierX, fourierY, Canvas canvas) {
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
 
-    var vx = epiCycles(450, 75, 0, fourierX, canvas);
-    var vy = epiCycles(100, 400, pi / 2, fourierY, canvas);
-    var v = [vx[0], vy[1]];
+    var vx = epiCycles(Offset(550, 75), 0, fourierX, canvas);
+    var vy = epiCycles(Offset(100, 400), pi / 2, fourierY, canvas);
+    var v = [vx.dx, vy.dy];
 
     //unshift
     path.insert(0, v);
 
-    canvas.drawLine(Offset(vx[0], vx[1]), Offset(v[0], v[1]), paint);
-    canvas.drawLine(Offset(vy[0], vy[1]), Offset(v[0], v[1]), paint);
+    //Draw a line from the center of the most external ellipse (on the X axis)to the actual drawing point.
+    canvas.drawLine(Offset(vx.dx, vx.dy), Offset(v[0], v[1]), paint);
+
+    //Draw a line from the center of the most external ellipse (on the Y axis)to the actual drawing point.
+    canvas.drawLine(Offset(vy.dx, vy.dy), Offset(v[0], v[1]), paint);
 
     // begin shape
-    Path pathToDraw = Path()..moveTo(0, path.first[1]);
-    paint.style = PaintingStyle.stroke;
+    Path pathToDraw = Path()..moveTo(path.first[0], path.first[1]);
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
 
     for (int i = 0; i < path.length; i++) {
       pathToDraw.lineTo(path[i][0].toDouble(), path[i][1]);
     }
-    // canvas.translate(150, )
+
     canvas.drawPath(pathToDraw, paint);
 
     final dt = 2 * pi / fourierY.length;

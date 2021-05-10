@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/dft_two_epycicles_with_compute.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage();
 
   @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _startAnimation = false;
+  List<Map<String, double>> drawing2 = [];
+
+  void onPanUpdate(DragUpdateDetails dragDetails) {
+    print(dragDetails.localPosition);
+    //-550 and -400 is relative to the center of the Epicycles on the X and Y axis.
+    drawing2.add({
+      "x": dragDetails.localPosition.dx - 550,
+      "y": dragDetails.localPosition.dy - 400
+    });
+  }
+
+  void showDFTDrawing(DragEndDetails x) {
+    _startAnimation = true;
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // var signal = [
-    //   100,
-    //   100,
-    //   100,
-    //   -100,
-    //   -100,
-    //   -100,
-    //   100,
-    //   100,
-    //   100,
-    //   -100,
-    //   -100,
-    //   -100,
-    // ];
-
-    // int aux = 0;
-    // dft(signal).forEach((element) {
-    //   print('$aux: $element');
-    //   aux++;
-    // });
-
     return Scaffold(
       body: Container(
         color: Colors.black,
@@ -37,7 +38,14 @@ class HomePage extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white, width: 2),
             ),
-            child: DFTWithTwoEpyciclesWithCompute(),
+            // child: ,
+            child: _startAnimation
+                ? DFTWithTwoEpyciclesWithCompute(drawing2)
+                : GestureDetector(
+                    onPanUpdate: onPanUpdate,
+                    onPanEnd: showDFTDrawing,
+                    child: Container(color: Colors.black),
+                  ),
           ),
         ),
       ),

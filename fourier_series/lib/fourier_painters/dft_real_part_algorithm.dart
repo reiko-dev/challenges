@@ -1,10 +1,8 @@
-//Formula img
-//https://wikimedia.org/api/rest_v1/media/math/render/svg/18b0e4c82f095e3789e51ad8c2c6685306b5662b
-//
-
 import 'dart:math';
 
-///TODO:
+///Implementation of the mathematic formula of dft on Wikipedia:
+///https://wikimedia.org/api/rest_v1/media/math/render/svg/18b0e4c82f095e3789e51ad8c2c6685306b5662b
+///
 ///What i need for a circular epicycle
 ///1. Amplitude (the radius)
 ///2. Frequency: how many cycles trough the circle does it rotate per unit of time.
@@ -18,7 +16,7 @@ List<dynamic> dftRealPartAlgorithm(x) {
     //real component
     double re = 0;
 
-    //imaginaery component
+    //imaginary component
     double im = 0;
 
     for (var n = 0; n < N; n++) {
@@ -36,7 +34,8 @@ List<dynamic> dftRealPartAlgorithm(x) {
     var amp = sqrt(re * re + im * im);
     var phase = atan2(im, re);
 
-    // X[k] = {re, im}; //this is used on the tube
+    //adds, respectively:
+    //amplitud, frequency, imaginary number, phase and real number
     X.add({
       'amp': amp,
       'freq': freq,
@@ -51,18 +50,21 @@ List<dynamic> dftRealPartAlgorithm(x) {
 
 ///
 /// The input is a map like:
+///
+///skip is the amount of points to be rendered.
+///
+///a) if skip=1, (1/1) of the entered points will be rendered.
+///
+///b) if skip=10, 1/10 points will be rendered.
 /// ```dart
 /// {
 ///
-///   //skip is the variable that controls the amount of points must to be rendered.
-///   //if skip=1, (1/1) of the entered points will be rendered.
-///   //if skip=2, 1/2 (half) points will be renderd.
-///   //if skip=10, 1/10 points will be renderd.
+
 ///
 ///   'skip': 3,
 ///   'drawing': [
 ///     {"x": -75.23920093800275, "y": -9.276916512631997},
-///     [...]
+///     ...
 ///     {"x": -75.23920093800275, "y": -9.276916512631997},
 ///    ]
 /// }
@@ -75,8 +77,16 @@ List<dynamic> dftRealPartAlgorithm(x) {
 ///     [...]
 ///     {"x": -75.23920093800275, "y": -9.276916512631997},
 ///    ],
-///   'fourierX': { 'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,}
-///   'fourierY': { 'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,}
+///   'fourierX': [
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///     ...
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///    ],
+///   'fourierY': [
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///     ...
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///    ],
 /// }
 /// ```
 Map<String, dynamic> computeDrawingData(Map<String, dynamic> input) {
