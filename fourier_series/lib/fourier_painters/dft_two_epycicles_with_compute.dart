@@ -156,7 +156,7 @@ class DFTPainter extends CustomPainter {
 
     final dt = 2 * pi / fourierY.length;
     time += dt;
-    if (time > (2 * pi) * 2) {
+    if (time > 2 * pi) {
       time = 0;
       path = [];
       animationController.stop();

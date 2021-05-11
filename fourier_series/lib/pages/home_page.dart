@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/dft_two_epycicles_with_compute.dart';
+import 'package:fourier_series/user_drawing.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
@@ -40,11 +41,25 @@ class _HomePageState extends State<HomePage> {
             ),
             // child: ,
             child: _startAnimation
-                ? DFTWithTwoEpyciclesWithCompute(drawing2)
+                ? GestureDetector(
+                    onTap: () {
+                      _startAnimation = false;
+                      setState(() {});
+                    },
+                    child: Container(
+                      color: Colors.black,
+                      child: DFTWithTwoEpyciclesWithCompute(drawing2),
+                    ),
+                  )
                 : GestureDetector(
                     onPanUpdate: onPanUpdate,
                     onPanEnd: showDFTDrawing,
-                    child: Container(color: Colors.black),
+                    child: Container(
+                      color: Colors.black,
+                      child: CustomPaint(
+                        painter: UserDrawing(),
+                      ),
+                    ),
                   ),
           ),
         ),
