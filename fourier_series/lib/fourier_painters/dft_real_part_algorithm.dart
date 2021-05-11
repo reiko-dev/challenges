@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
+
 ///Implementation of the mathematic formula of dft on Wikipedia:
 ///https://wikimedia.org/api/rest_v1/media/math/render/svg/18b0e4c82f095e3789e51ad8c2c6685306b5662b
 ///
@@ -8,7 +10,7 @@ import 'dart:math';
 ///2. Frequency: how many cycles trough the circle does it rotate per unit of time.
 ///3. Phase: an offset where does this wave pattern begins.
 List<dynamic> dftRealPartAlgorithm(x) {
-  List<dynamic> X = [];
+  List<Map<String, dynamic>> X = [];
 
   final N = x.length;
 
@@ -94,15 +96,16 @@ Map<String, dynamic> computeDrawingData(Map<String, dynamic> input) {
   var signalX = [];
   var signalY = [];
 
-  final drawing = input['drawing'];
+  final drawing = input['drawing'] as List<Offset>;
   for (int i = 0; i < drawing.length; i += input['skip'] as int) {
-    signalX.add(drawing[i]['x']);
-    signalY.add(drawing[i]['y']);
+    signalX.add(drawing[i].dx);
+    signalY.add(drawing[i].dy);
   }
 
   var fourierX = dftRealPartAlgorithm(signalX);
   var fourierY = dftRealPartAlgorithm(signalY);
 
+  //Sort the values
   fourierX.sort((a, b) => b['amp'].compareTo(a['amp']));
   fourierY.sort((a, b) => b['amp'].compareTo(a['amp']));
 

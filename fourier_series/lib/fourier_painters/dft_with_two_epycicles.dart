@@ -72,8 +72,8 @@ class DFTPainter extends CustomPainter {
     int skip = 30;
 
     for (int i = 0; i < drawing.length; i += skip) {
-      signalX.add(drawing[i]['x']);
-      signalY.add(drawing[i]['y']);
+      signalX.add(drawing[i].dx);
+      signalY.add(drawing[i].dy);
       // signalX.add(0);
       // signalY.add(0);
     }
