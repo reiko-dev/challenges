@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/dft_real_part_algorithm.dart';
 import 'package:fourier_series/fourier_painters/drawing.dart';
 import 'package:fourier_series/pages/dft_with_complex_number/complex_number_dft_algorithm.dart';
 
@@ -61,7 +60,7 @@ class DFTWithComplexNumberPainter extends CustomPainter {
   DFTWithComplexNumberPainter(this.animationController);
 
   final rand = Random();
-  final colors = [Colors.blue, Colors.green, Colors.pink, Colors.yellow];
+  final colors = [Colors.blue, Colors.pink, Colors.yellow];
   static double time = 0;
   static int currentColorIndex = 0;
   static var path = [];
