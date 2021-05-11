@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/dft_two_epycicles_with_compute.dart';
-import 'package:fourier_series/user_drawing.dart';
+import 'package:fourier_series/fourier_painters/my_drawing.dart';
+import 'package:fourier_series/fourier_painters/user_drawing.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
@@ -11,18 +12,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _startAnimation = false;
-  List<Map<String, double>> drawing2 = [];
+  int xEpicyclePosition = 550, yEpicyclePosition = 400;
+  int currentUserDrawingIndex = 0;
+
+  //Each list is painted drawing lines from the first to the last point.
+  List<List<Offset>> userDrawingList = [];
 
   void onPanUpdate(DragUpdateDetails dragDetails) {
-    print(dragDetails.localPosition);
+    if (currentUserDrawingIndex >= userDrawingList.length)
+      userDrawingList.add([]);
+
     //-550 and -400 is relative to the center of the Epicycles on the X and Y axis.
-    drawing2.add({
-      "x": dragDetails.localPosition.dx - 550,
-      "y": dragDetails.localPosition.dy - 400
-    });
+    userDrawingList[currentUserDrawingIndex].add(Offset(
+      dragDetails.localPosition.dx - xEpicyclePosition,
+      dragDetails.localPosition.dy - yEpicyclePosition,
+    ));
+
+    if (mounted && !_startAnimation) setState(() {});
   }
 
-  void showDFTDrawing(DragEndDetails x) {
+  void showDFTDrawing() {
+    userDrawingList.forEach((element) {
+      element.forEach((element) {
+        print('Offset(${element.dx},${element.dy})');
+      });
+    });
+
     _startAnimation = true;
     setState(() {});
   }
@@ -33,34 +48,65 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         color: Colors.black,
         child: Center(
-          child: Container(
-            width: 804,
-            height: 604,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-            // child: ,
-            child: _startAnimation
-                ? GestureDetector(
-                    onTap: () {
+          child: Column(
+            children: [
+              Spacer(),
+              Container(
+                width: 804,
+                height: 604,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                // child: ,
+                child: _startAnimation
+                    ? GestureDetector(
+                        onTap: () {
+                          _startAnimation = false;
+                          currentUserDrawingIndex = 0;
+                          userDrawingList = [];
+                          setState(() {});
+                        },
+                        child: Container(
+                          color: Colors.black,
+                          child: DFTWithTwoEpyciclesWithCompute([myDrawing], 1),
+                        ),
+                      )
+                    : GestureDetector(
+                        onPanUpdate: onPanUpdate,
+                        onPanEnd: (_) => currentUserDrawingIndex++,
+                        child: Container(
+                          color: Colors.black,
+                          child: CustomPaint(
+                            painter: UserDrawing(
+                              [...userDrawingList],
+                              xEpicyclePosition,
+                              yEpicyclePosition,
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: showDFTDrawing,
+                    child: Text('Run DFT'),
+                  ),
+                  SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () {
                       _startAnimation = false;
+                      currentUserDrawingIndex = 0;
+                      userDrawingList = [];
                       setState(() {});
                     },
-                    child: Container(
-                      color: Colors.black,
-                      child: DFTWithTwoEpyciclesWithCompute(drawing2),
-                    ),
-                  )
-                : GestureDetector(
-                    onPanUpdate: onPanUpdate,
-                    onPanEnd: showDFTDrawing,
-                    child: Container(
-                      color: Colors.black,
-                      child: CustomPaint(
-                        painter: UserDrawing(),
-                      ),
-                    ),
+                    child: Text('Clear'),
+                    style: ElevatedButton.styleFrom(primary: Colors.red),
                   ),
+                ],
+              )
+            ],
           ),
         ),
       ),
