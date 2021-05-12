@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/pages/dft_with_complex_number/dft_with_complex_number_drawer.dart';
+import 'package:fourier_series/pages/complex_dft/complex_dft_drawer.dart';
 
-class ComplexNumberDFTUserDrawing extends StatefulWidget {
-  const ComplexNumberDFTUserDrawing();
+class ComplexNumberDFTUserDrawingPage extends StatefulWidget {
+  const ComplexNumberDFTUserDrawingPage();
 
   @override
   State<StatefulWidget> createState() => _DFTSWithComplexNumberstate();
 }
 
-class _DFTSWithComplexNumberstate extends State<ComplexNumberDFTUserDrawing> {
+class _DFTSWithComplexNumberstate
+    extends State<ComplexNumberDFTUserDrawingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

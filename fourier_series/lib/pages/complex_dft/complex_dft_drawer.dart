@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/drawing.dart';
-import 'package:fourier_series/pages/dft_with_complex_number/complex_number_dft_algorithm.dart';
+import 'package:fourier_series/pages/complex_dft/complex_dft_algorithm.dart';
 
 class DFTWithComplexNumberDrawer extends StatefulWidget {
   @override
@@ -26,31 +26,11 @@ class _DFTWithComplexNumberDrawerState extends State<DFTWithComplexNumberDrawer>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) => CustomPaint(
-            painter: DFTWithComplexNumberPainter(controller),
-          ),
-        ),
-        Positioned(
-          bottom: 10,
-          right: 10,
-          child: IconButton(
-            icon: Icon(
-              Icons.stop,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (controller.isAnimating)
-                controller.stop();
-              else
-                controller.forward();
-            },
-          ),
-        )
-      ],
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (_, __) => CustomPaint(
+        painter: DFTWithComplexNumberPainter(controller),
+      ),
     );
   }
 }

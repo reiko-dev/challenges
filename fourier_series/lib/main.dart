@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/pages/complex_dft_user_drawing/complex_number_dft_user_drawing.dart';
+import 'package:fourier_series/pages/complex_dft/complex_dft_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ComplexNumberDFTUserDrawing(),
+      home: const ComplexNumberDFTUserDrawingPage(),
     );
   }
 }
