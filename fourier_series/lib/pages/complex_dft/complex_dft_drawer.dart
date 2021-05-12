@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:fourier_series/fourier_painters/drawing.dart';
 import 'package:fourier_series/pages/complex_dft/complex_dft_algorithm.dart';
 
-class DFTWithComplexNumberDrawer extends StatefulWidget {
+class ComplexDFTDrawer extends StatefulWidget {
   @override
-  createState() => _DFTWithComplexNumberDrawerState();
+  createState() => _ComplexDFTDrawerState();
 }
 
-class _DFTWithComplexNumberDrawerState extends State<DFTWithComplexNumberDrawer>
+class _ComplexDFTDrawerState extends State<ComplexDFTDrawer>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
@@ -29,15 +29,15 @@ class _DFTWithComplexNumberDrawerState extends State<DFTWithComplexNumberDrawer>
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) => CustomPaint(
-        painter: DFTWithComplexNumberPainter(controller),
+        painter: ComplexDFTPainter(controller),
       ),
     );
   }
 }
 
-class DFTWithComplexNumberPainter extends CustomPainter {
+class ComplexDFTPainter extends CustomPainter {
   final AnimationController animationController;
-  DFTWithComplexNumberPainter(this.animationController);
+  ComplexDFTPainter(this.animationController);
 
   final rand = Random();
   final colors = [Colors.blue, Colors.pink, Colors.yellow];
