@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/my_drawing.dart';
+import 'package:fourier_series/pages/complex_dft_user_drawing/complex_dft_painter.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/drawing_animation.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/user_drawing.dart';
 
@@ -12,6 +12,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   bool _startAnimation = false;
+  //the center of the Epicycles on the X and Y axis.
   int xEpicyclePosition = 400, yEpicyclePosition = 300;
   int currentUserDrawingIndex = 0;
 
@@ -22,7 +23,6 @@ class _MainPageState extends State<MainPage> {
     if (currentUserDrawingIndex >= userDrawingList.length)
       userDrawingList.add([]);
 
-    //-550 and -400 is relative to the center of the Epicycles on the X and Y axis.
     userDrawingList[currentUserDrawingIndex].add(Offset(
       dragDetails.localPosition.dx - xEpicyclePosition,
       dragDetails.localPosition.dy - yEpicyclePosition,
@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                         ComplexDFTPainter.clean();
                         setState(() {});
                       },
-                      child: DrawingAnimation(userDrawingList, 3),
+                      child: DrawingAnimation(userDrawingList, 4),
                       // child: DrawingAnimation([drawing], 7),
                     )
                   : GestureDetector(

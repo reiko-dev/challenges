@@ -29,15 +29,15 @@ class _ComplexDFTDrawerState extends State<ComplexDFTDrawer>
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) => CustomPaint(
-        painter: ComplexDFTPainter(controller),
+        painter: _ComplexDFTPainter(controller),
       ),
     );
   }
 }
 
-class ComplexDFTPainter extends CustomPainter {
+class _ComplexDFTPainter extends CustomPainter {
   final AnimationController animationController;
-  ComplexDFTPainter(this.animationController);
+  _ComplexDFTPainter(this.animationController);
 
   final rand = Random();
   final colors = [Colors.blue, Colors.pink, Colors.yellow];
