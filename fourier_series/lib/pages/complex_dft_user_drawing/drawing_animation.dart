@@ -4,9 +4,8 @@ import 'package:fourier_series/pages/complex_dft_user_drawing/algorithm.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/complex_dft_painter.dart';
 
 class DrawingAnimation extends StatefulWidget {
-  DrawingAnimation(this.drawingList, this.skip) : assert(skip > 0);
+  DrawingAnimation(this.drawingList);
   final List<List<Offset>> drawingList;
-  final int skip;
 
   @override
   createState() => _ComplexDFTUserDrawerState();
@@ -31,7 +30,6 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
 
     dataToCompute = {
       'drawing': widget.drawingList,
-      'skip': widget.skip,
     };
     loadData();
     print('initState end');
@@ -45,35 +43,46 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
   }
 
   Future<void> loadData() async {
-    List<Future> futuresList = [];
-    dataToCompute['drawing'].forEach((List<Offset> points) {
-      futuresList.add(
-        compute(
-          computeUserDrawingData,
-          {'skip': dataToCompute['skip'], 'drawing': points},
-        ),
-      );
+    final List<Offset> points = [];
+
+    dataToCompute['drawing'].forEach((element) {
+      points.addAll(element);
     });
 
-    dataToCompute['fourier'] = [];
+    final result = await compute(computeUserDrawingData, points);
 
-    int totalOfPoints = 0;
-
-    await Future.wait(futuresList).then(
-      (value) {
-        value.forEach((element) {
-          dataToCompute['fourier'].add(element['fourier']);
-          totalOfPoints += element['fourier'].length as int;
-        });
-      },
-    );
-
-    dataToCompute['totalOfPoints'] = totalOfPoints;
+    dataToCompute['fourier'] = result;
 
     setState(() {
       isLoaded = true;
     });
   }
+
+  // Future<void> loadData() async {
+  //   List<Future> futuresList = [];
+  //   dataToCompute['drawing'].forEach((List<Offset> points) {
+  //     futuresList.add(
+  //       compute(
+  //         computeUserDrawingData,
+  //         {'skip': dataToCompute['skip'], 'drawing': points},
+  //       ),
+  //     );
+  //   });
+  //   dataToCompute['fourier'] = [];
+  //   int totalOfPoints = 0;
+  //   await Future.wait(futuresList).then(
+  //     (value) {
+  //       value.forEach((element) {
+  //         dataToCompute['fourier'].add(element['fourier']);
+  //         totalOfPoints += element['fourier'].length as int;
+  //       });
+  //     },
+  //   );
+  //   dataToCompute['totalOfPoints'] = totalOfPoints;
+  //   setState(() {
+  //     isLoaded = true;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +92,8 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
             builder: (_, __) => CustomPaint(
               painter: ComplexDFTPainter(
                 controller,
-                dataToCompute['fourier'],
-                dataToCompute['totalOfPoints'],
-                AnimationStyle.loop,
+                dataToCompute,
+                AnimationStyle.loopOver,
               ),
             ),
           )

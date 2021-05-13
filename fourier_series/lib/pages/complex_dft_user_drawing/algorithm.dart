@@ -10,7 +10,7 @@ import 'package:fourier_series/pages/complex_dft_user_drawing/complex.dart';
 ///1. Amplitude (the radius)
 ///2. Frequency: how many cycles trough the circle does it rotate per unit of time.
 ///3. Phase: an offset where does this wave pattern begins.
-List<dynamic> algorithm(List<Complex> x) {
+List<Map<String, dynamic>> algorithm(List<Complex> x) {
   List<Map<String, dynamic>> X = [];
 
   final N = x.length;
@@ -50,50 +50,21 @@ List<dynamic> algorithm(List<Complex> x) {
 ///
 /// The input is a map like:
 ///
-///skip is the amount of points to be rendered.
-///
-///a) if skip=1, (1/1) of the entered points will be rendered.
-///
-///b) if skip=10, 1/10 points will be rendered.
+/// The function returns the map:
 /// ```dart
-/// {
+/// [
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///     ...
+///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
+///  ]
 ///
-
-///
-///   'skip': 3,
-///   'drawing': [
-///     {"x": -75.23920093800275, "y": -9.276916512631997},
-///     ...
-///     {"x": -75.23920093800275, "y": -9.276916512631997},
-///    ]
-/// }
 /// ```
-/// The input results in the map:
-/// ```dart
-/// {
-///   'drawing': [
-///     {"x": -75.23920093800275, "y": -9.276916512631997},
-///     [...]
-///     {"x": -75.23920093800275, "y": -9.276916512631997},
-///    ],
-///   'fourierX': [
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///     ...
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///    ],
-///   'fourierY': [
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///     ...
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///    ],
-/// }
-/// ```
-Map<String, dynamic> computeUserDrawingData(Map<String, dynamic> input) {
+List<Map<String, dynamic>> computeUserDrawingData(List<Offset> input) {
   //This is the signal, any arbitrary digital signal/array of numbers
   List<Complex> signal = [];
 
-  final drawing = input['drawing'] as List<Offset>;
-  for (int i = 0; i < drawing.length; i += input['skip'] as int) {
+  final drawing = input;
+  for (int i = 0; i < drawing.length; i++) {
     signal.add(Complex(drawing[i].dx, drawing[i].dy));
   }
 
@@ -102,7 +73,5 @@ Map<String, dynamic> computeUserDrawingData(Map<String, dynamic> input) {
   //Sort the values
   fourier.sort((a, b) => b['amp'].compareTo(a['amp']));
 
-  input['fourier'] = fourier;
-
-  return input;
+  return fourier;
 }

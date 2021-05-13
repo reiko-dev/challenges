@@ -11,6 +11,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final int skip = 3;
+  final List<List<Offset>> listWithSkippedItens = [];
+
   bool _startAnimation = false;
   //the center of the Epicycles on the X and Y axis.
   int xEpicyclePosition = 400, yEpicyclePosition = 300;
@@ -32,10 +35,18 @@ class _MainPageState extends State<MainPage> {
   }
 
   void showDFTDrawing() {
-    if (userDrawingList.length < 1 ||
-        (userDrawingList.length == 3 && userDrawingList[0].length < 1)) {
+    if (userDrawingList.length < 1 || userDrawingList[0].length < 1) {
       print('userDrawingList not valid');
       return;
+    }
+    listWithSkippedItens.clear();
+
+    for (int i = 0; i < userDrawingList.length; i++) {
+      listWithSkippedItens.add([]);
+
+      for (int j = 0; j < userDrawingList[i].length; j += skip) {
+        listWithSkippedItens[i].add(userDrawingList[i][j]);
+      }
     }
 
     if (!_startAnimation) _startAnimation = true;
@@ -66,7 +77,7 @@ class _MainPageState extends State<MainPage> {
                         ComplexDFTPainter.clean();
                         setState(() {});
                       },
-                      child: DrawingAnimation(userDrawingList, 4),
+                      child: DrawingAnimation(listWithSkippedItens),
                       // child: DrawingAnimation([drawing], 7),
                     )
                   : GestureDetector(

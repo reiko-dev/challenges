@@ -8,13 +8,12 @@ class ComplexDFTPainter extends CustomPainter {
   final AnimationController animationController;
   ComplexDFTPainter(
     this.animationController,
-    this.listOfFourier,
-    this.totalOfPoints,
+    this.data,
     this.style,
   );
 
-  final List<dynamic> listOfFourier;
-  final int totalOfPoints;
+  final Map<String, dynamic> data;
+
   double firstEllipseRadius = 0;
 
   final colors = [
@@ -42,23 +41,24 @@ class ComplexDFTPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    //If has drawed all the current fourier points list stores then in the oldPaths and go to the next list.
-    if (path.length == listOfFourier[currentDrawingIndex].length) {
-      oldPaths.add([...path]);
+    //Stores the path of the current drawing and moves to the next
+    if (path.length == data['drawing'][currentDrawingIndex].length) {
+      //Só adiciona esse path se ele ainda não tiver sido adicionado anteriormente.
+      if (oldPaths.length <= currentDrawingIndex) {
+        oldPaths.add([...path]);
+      }
       path.clear();
 
-      if (currentDrawingIndex + 1 < listOfFourier.length)
+      if (currentDrawingIndex + 1 < data['drawing'].length)
         currentDrawingIndex++;
       else
         currentDrawingIndex = 0;
-
       changeColor();
     }
 
     drawOldPaths(canvas);
 
-    draw(listOfFourier[currentDrawingIndex] as List<Map<String, dynamic>>,
-        canvas);
+    draw(data['fourier'] as List<Map<String, dynamic>>, canvas);
   }
 
   void changeColor() {
