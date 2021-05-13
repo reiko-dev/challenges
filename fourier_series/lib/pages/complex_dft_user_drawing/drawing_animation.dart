@@ -100,7 +100,7 @@ class ComplexDFTPainter extends CustomPainter {
   final AnimationStyle style;
   static double time = 0;
   static int currentColorIndex = 0;
-  static var path = [];
+  static List<Offset> path = [];
 
   static void clean() {
     currentColorIndex = 0;
@@ -146,27 +146,30 @@ class ComplexDFTPainter extends CustomPainter {
     return [x, y];
   }
 
-  draw(fourier, canvas) {
+  draw(List<Map<String, dynamic>> fourier, canvas) {
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
 
     var v = epicycles(fourier, canvas);
 
-    path.insert(0, v);
-    // path.add(v);
+    //
+    //Verifica se este é o loop de retorno ao ponto de origem.
+    //Se for, não deve desenhar uma linha ao ponto de origem.
+    if (path.length == 0 || path.length % fourier.length != 0)
+      path.insert(0, Offset(v[0], v[1]));
 
     // begin shape
-    Path pathToDraw = Path()..moveTo(path.first[0], path.first[1]);
+    Path pathToDraw = Path()..moveTo(path.first.dx, path.first.dy);
     paint
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = Colors.white.withOpacity(0.3);
+      ..color = randomColor();
 
     for (int i = 0; i < path.length; i++) {
-      pathToDraw.lineTo(path[i][0].toDouble(), path[i][1]);
+      pathToDraw.lineTo(path[i].dx.toDouble(), path[i].dy);
     }
-    // canvas.translate(150, )
+
     canvas.drawPath(pathToDraw, paint);
 
     final dt = 2 * pi / fourier.length;

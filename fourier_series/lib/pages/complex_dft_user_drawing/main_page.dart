@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fourier_series/fourier_painters/my_drawing.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/drawing_animation.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/user_drawing.dart';
 
@@ -65,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                         ComplexDFTPainter.clean();
                         setState(() {});
                       },
-                      child: DrawingAnimation(userDrawingList, 4),
+                      child: DrawingAnimation(userDrawingList, 3),
                       // child: DrawingAnimation([drawing], 7),
                     )
                   : GestureDetector(
