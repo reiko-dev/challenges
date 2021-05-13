@@ -15,8 +15,8 @@ class ComplexDFTPainter extends CustomPainter {
 
   final List<dynamic> listOfFourier;
   final int totalOfPoints;
+  double firstEllipseRadius = 0;
 
-  final rand = Random();
   final colors = [
     Colors.blue,
     Colors.pink,
@@ -29,8 +29,9 @@ class ComplexDFTPainter extends CustomPainter {
   static double time = 0;
   static List<Offset> path = [];
   static int currentDrawingIndex = 0;
+
   static List<List<Offset>> oldPaths = [];
-  static int colorIndex = 0;
+  static int currentColorIndex = 0;
 
   static void clean() {
     time = 0;
@@ -61,10 +62,10 @@ class ComplexDFTPainter extends CustomPainter {
   }
 
   void changeColor() {
-    if (colorIndex == colors.length - 1)
-      colorIndex = 0;
+    if (currentColorIndex == colors.length - 1)
+      currentColorIndex = 0;
     else
-      colorIndex++;
+      currentColorIndex++;
   }
 
   void drawOldPaths(Canvas canvas) {
@@ -123,7 +124,7 @@ class ComplexDFTPainter extends CustomPainter {
 
   draw(List<Map<String, dynamic>> fourier, canvas) {
     Paint paint = Paint()
-      ..color = colors[colorIndex]
+      ..color = colors[currentColorIndex]
       ..style = PaintingStyle.stroke;
 
     var v = epicycles(fourier, canvas);
