@@ -4,8 +4,9 @@ import 'package:fourier_series/pages/complex_dft_user_drawing/algorithm.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/complex_dft_painter.dart';
 
 class DrawingAnimation extends StatefulWidget {
-  DrawingAnimation(this.drawingList);
+  DrawingAnimation(this.drawingList, this.strokeWidth);
   final List<List<Offset>> drawingList;
+  final double strokeWidth;
 
   @override
   createState() => _ComplexDFTUserDrawerState();
@@ -53,9 +54,10 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
 
     dataToCompute['fourier'] = result;
 
-    setState(() {
-      isLoaded = true;
-    });
+    if (mounted)
+      setState(() {
+        isLoaded = true;
+      });
   }
 
   // Future<void> loadData() async {
@@ -94,6 +96,7 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
                 controller,
                 dataToCompute,
                 AnimationStyle.loopOver,
+                widget.strokeWidth,
               ),
             ),
           )

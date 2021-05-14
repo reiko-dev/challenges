@@ -11,13 +11,18 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final int skip = 3;
+  double skipValue = 1;
+
   final List<List<Offset>> listWithSkippedItens = [];
 
   bool _startAnimation = false;
   //the center of the Epicycles on the X and Y axis.
   int xEpicyclePosition = 400, yEpicyclePosition = 300;
+
   int currentUserDrawingIndex = 0;
+
+  //The width of the stroke to paint the user drawings
+  double strokeWidth = 1;
 
   //Each list is painted drawing lines from the first to the last point.
   List<List<Offset>> userDrawingList = [];
@@ -44,7 +49,7 @@ class _MainPageState extends State<MainPage> {
     for (int i = 0; i < userDrawingList.length; i++) {
       listWithSkippedItens.add([]);
 
-      for (int j = 0; j < userDrawingList[i].length; j += skip) {
+      for (int j = 0; j < userDrawingList[i].length; j += skipValue.floor()) {
         listWithSkippedItens[i].add(userDrawingList[i][j]);
       }
     }
@@ -55,8 +60,13 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
+        width: size.width,
+        height: size.height,
         color: Colors.black,
         child: Column(
           children: [
@@ -77,7 +87,8 @@ class _MainPageState extends State<MainPage> {
                         ComplexDFTPainter.clean();
                         setState(() {});
                       },
-                      child: DrawingAnimation(listWithSkippedItens),
+                      child:
+                          DrawingAnimation(listWithSkippedItens, strokeWidth),
                       // child: DrawingAnimation([drawing], 7),
                     )
                   : GestureDetector(
@@ -90,6 +101,7 @@ class _MainPageState extends State<MainPage> {
                             [...userDrawingList],
                             xEpicyclePosition,
                             yEpicyclePosition,
+                            strokeWidth,
                           ),
                         ),
                       ),
@@ -103,7 +115,7 @@ class _MainPageState extends State<MainPage> {
                   onPressed: showDFTDrawing,
                   child: Text('Run DFT'),
                 ),
-                SizedBox(width: 20),
+                SizedBox(width: 15),
                 ElevatedButton(
                   onPressed: () {
                     _startAnimation = false;
@@ -114,6 +126,56 @@ class _MainPageState extends State<MainPage> {
                   },
                   child: Text('Clear'),
                   style: ElevatedButton.styleFrom(primary: Colors.red),
+                ),
+                SizedBox(width: 20),
+                Column(
+                  children: [
+                    Text(
+                      'Skip value:',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    Container(
+                      // color: Colors.white,
+                      width: 200,
+                      height: 40,
+                      child: Slider(
+                          value: skipValue,
+                          label: '$skipValue',
+                          activeColor: Colors.green,
+                          min: 1,
+                          max: 10,
+                          divisions: 9,
+                          onChanged: (newSkip) {
+                            skipValue = newSkip;
+                            setState(() {});
+                          }),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 20),
+                Column(
+                  children: [
+                    Text(
+                      'Line width:',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    Container(
+                      // color: Colors.white,
+                      width: 200,
+                      height: 40,
+                      child: Slider(
+                          value: strokeWidth,
+                          label: '$strokeWidth',
+                          activeColor: Colors.purple,
+                          min: 1,
+                          max: 10,
+                          divisions: 9,
+                          onChanged: (newWidth) {
+                            strokeWidth = newWidth;
+                            setState(() {});
+                          }),
+                    ),
+                  ],
                 ),
               ],
             ),
