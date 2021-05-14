@@ -10,27 +10,31 @@ class ComplexDFTPainter extends CustomPainter {
     this.animationController,
     this.data,
     this.style,
+    this.strokeWidth,
   );
 
   final Map<String, dynamic> data;
+  final AnimationStyle style;
+  final double strokeWidth;
 
   double firstEllipseRadius = 0;
 
   final colors = [
     Colors.blue,
-    Colors.pink,
-    Colors.yellow,
     Colors.green,
     Colors.purple,
-    Colors.red
+    Colors.teal,
+    Colors.pink,
+    Colors.red,
+    Colors.white,
+    Colors.orange,
   ];
-  final AnimationStyle style;
+
   static double time = 0;
   static List<Offset> path = [];
   static int currentDrawingIndex = 0;
 
   static List<List<Offset>> oldPaths = [];
-  static int currentColorIndex = 0;
 
   static void clean() {
     time = 0;
@@ -53,7 +57,6 @@ class ComplexDFTPainter extends CustomPainter {
         currentDrawingIndex++;
       else
         currentDrawingIndex = 0;
-      changeColor();
     }
 
     drawOldPaths(canvas);
@@ -61,32 +64,29 @@ class ComplexDFTPainter extends CustomPainter {
     draw(data['fourier'] as List<Map<String, dynamic>>, canvas);
   }
 
-  void changeColor() {
-    if (currentColorIndex == colors.length - 1)
-      currentColorIndex = 0;
-    else
-      currentColorIndex++;
-  }
-
   void drawOldPaths(Canvas canvas) {
     if (oldPaths.isEmpty) return;
 
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..color = const Color(0x77FFFFFF)
-      ..strokeWidth = 2;
+      ..strokeWidth = strokeWidth;
 
-    final path = Path();
+    final List<Path> paths = [];
 
-    oldPaths.forEach((list) {
-      path.moveTo(list.first.dx, list.first.dy);
+    for (int i = 0; i < oldPaths.length; i++) {
+      paths.add(Path());
 
-      list.forEach((Offset point) {
-        path.lineTo(point.dx, point.dy);
+      paths[i].moveTo(oldPaths[i].first.dx, oldPaths[i].first.dy);
+
+      oldPaths[i].forEach((Offset point) {
+        paths[i].lineTo(point.dx, point.dy);
       });
-    });
+    }
 
-    canvas.drawPath(path, paint);
+    for (int i = 0; i < paths.length; i++) {
+      paint.color = colors[i % colors.length];
+      canvas.drawPath(paths[i], paint);
+    }
   }
 
   List<double> epicycles(List<Map<String, dynamic>> fourier, Canvas canvas) {
@@ -94,7 +94,7 @@ class ComplexDFTPainter extends CustomPainter {
     double x = 400, y = 300;
 
     Paint paint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withOpacity(0.04)
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < fourier.length; i++) {
@@ -109,13 +109,10 @@ class ComplexDFTPainter extends CustomPainter {
       y += radius * sin(freq * time + phase);
 
       ///Draws the circles
-      paint
-        ..strokeWidth = 2
-        ..style = PaintingStyle.stroke;
+      paint..strokeWidth = 2;
       canvas.drawCircle(Offset(prevX, prevY), radius, paint);
 
       //Draw a line to the center of the next circle.
-      paint..style = PaintingStyle.fill;
       canvas.drawLine(Offset(prevX, prevY), Offset(x, y), paint);
     }
 
@@ -123,10 +120,6 @@ class ComplexDFTPainter extends CustomPainter {
   }
 
   draw(List<Map<String, dynamic>> fourier, canvas) {
-    Paint paint = Paint()
-      ..color = colors[currentColorIndex]
-      ..style = PaintingStyle.stroke;
-
     var v = epicycles(fourier, canvas);
 
     //
@@ -137,9 +130,11 @@ class ComplexDFTPainter extends CustomPainter {
 
     // begin shape
     Path pathToDraw = Path()..moveTo(path.first.dx, path.first.dy);
-    paint
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+
+    Paint paint = Paint()
+      ..color = const Color(0xFFFBC02D)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < path.length; i++) {
       pathToDraw.lineTo(path[i].dx.toDouble(), path[i].dy);
@@ -161,28 +156,20 @@ class ComplexDFTPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ComplexDFTPainter old) {
+    if (oldPaths.length == data['drawing'].length) {
+      switch (style) {
+        case AnimationStyle.once:
+          return false;
+
+        case AnimationStyle.loop:
+          clean();
+          return true;
+
+        default:
+          return true;
+      }
+    }
+
     return true;
-    // if (ComplexDFTPainter.path.length <
-    //     listOfFourier[currentDrawingIndex].length)
-    //   return true;
-    // else {
-    //   switch (style) {
-    //     case AnimationStyle.once:
-    //       return false;
-
-    //     case AnimationStyle.loop:
-    //       clean();
-    //       return true;
-
-    //     default:
-    //       //Cleans the path for saving memory.
-    //       if (path.length > 2 * listOfFourier[currentDrawingIndex].length) {
-    //         path.removeRange(
-    //             listOfFourier[currentDrawingIndex].length * 2, path.length - 1);
-    //       }
-
-    //       return true;
-    //   }
-    // }
   }
 }
