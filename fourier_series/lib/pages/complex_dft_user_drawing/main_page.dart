@@ -12,6 +12,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   double skipValue = 1;
+  int? drawingIndexToRemove;
 
   final List<List<Offset>> listWithSkippedItens = [];
 
@@ -55,6 +56,9 @@ class _MainPageState extends State<MainPage> {
     }
 
     if (!_startAnimation) _startAnimation = true;
+
+    ComplexDFTPainter.clean();
+
     setState(() {});
   }
 
@@ -83,6 +87,7 @@ class _MainPageState extends State<MainPage> {
                       onTap: () {
                         _startAnimation = false;
                         currentUserDrawingIndex = 0;
+                        drawingIndexToRemove = null;
                         userDrawingList = [];
                         ComplexDFTPainter.clean();
                         setState(() {});
@@ -93,7 +98,11 @@ class _MainPageState extends State<MainPage> {
                     )
                   : GestureDetector(
                       onPanUpdate: onPanUpdate,
-                      onPanEnd: (_) => currentUserDrawingIndex++,
+                      onPanEnd: (_) {
+                        drawingIndexToRemove = currentUserDrawingIndex;
+                        currentUserDrawingIndex++;
+                        setState(() {});
+                      },
                       child: Container(
                         color: Colors.black,
                         child: CustomPaint(
@@ -120,6 +129,7 @@ class _MainPageState extends State<MainPage> {
                   onPressed: () {
                     _startAnimation = false;
                     currentUserDrawingIndex = 0;
+                    drawingIndexToRemove = null;
                     userDrawingList = [];
                     ComplexDFTPainter.clean();
                     setState(() {});
@@ -177,6 +187,56 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ],
                 ),
+                SizedBox(width: 20),
+                if (userDrawingList.length >= 1)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          if (drawingIndexToRemove != null) {
+                            userDrawingList.removeAt(drawingIndexToRemove!);
+
+                            if (drawingIndexToRemove == 0) {
+                              if (userDrawingList.isEmpty)
+                                drawingIndexToRemove = null;
+                            } else
+                              drawingIndexToRemove = drawingIndexToRemove! - 1;
+
+                            currentUserDrawingIndex--;
+                            _startAnimation = false;
+                            setState(() {});
+                          }
+                        },
+                        child: Text('Delete drawing'),
+                      ),
+                      Container(
+                        width: 50,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: DropdownButton<int>(
+                          onChanged: (newValue) {
+                            drawingIndexToRemove = newValue;
+                            setState(() {});
+                          },
+                          value: drawingIndexToRemove,
+                          items: List.generate(
+                            userDrawingList.length,
+                            (index) => DropdownMenuItem<int>(
+                              value: index,
+                              child: Center(
+                                child: Text('${index + 1}'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             Spacer(),

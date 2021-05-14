@@ -60,32 +60,6 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
       });
   }
 
-  // Future<void> loadData() async {
-  //   List<Future> futuresList = [];
-  //   dataToCompute['drawing'].forEach((List<Offset> points) {
-  //     futuresList.add(
-  //       compute(
-  //         computeUserDrawingData,
-  //         {'skip': dataToCompute['skip'], 'drawing': points},
-  //       ),
-  //     );
-  //   });
-  //   dataToCompute['fourier'] = [];
-  //   int totalOfPoints = 0;
-  //   await Future.wait(futuresList).then(
-  //     (value) {
-  //       value.forEach((element) {
-  //         dataToCompute['fourier'].add(element['fourier']);
-  //         totalOfPoints += element['fourier'].length as int;
-  //       });
-  //     },
-  //   );
-  //   dataToCompute['totalOfPoints'] = totalOfPoints;
-  //   setState(() {
-  //     isLoaded = true;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return isLoaded
@@ -100,6 +74,12 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
               ),
             ),
           )
-        : CircularProgressIndicator();
+        : Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(),
+            ),
+          );
   }
 }
