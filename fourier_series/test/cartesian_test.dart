@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fourier_series/maths/cartesian.dart';
+import 'package:fourier_series/a%20old%20stuff/maths/cartesian.dart';
 
 void main() {
   final p1 = Offset(-3, -1);

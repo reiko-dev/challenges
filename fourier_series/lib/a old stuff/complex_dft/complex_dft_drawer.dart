@@ -1,15 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/dft_real_part_algorithm.dart';
-import 'package:fourier_series/fourier_painters/drawing.dart';
+import 'package:fourier_series/a%20old%20stuff/complex_dft/complex_dft_algorithm.dart';
+import 'package:fourier_series/a%20old%20stuff/fourier_painters/drawing.dart';
 
-class DFTWithTwoEpycicles extends StatefulWidget {
+class ComplexDFTDrawer extends StatefulWidget {
   @override
-  createState() => _DFTWithTwoEpyciclesState();
+  createState() => _ComplexDFTDrawerState();
 }
 
-class _DFTWithTwoEpyciclesState extends State<DFTWithTwoEpycicles>
+class _ComplexDFTDrawerState extends State<ComplexDFTDrawer>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
@@ -26,73 +26,49 @@ class _DFTWithTwoEpyciclesState extends State<DFTWithTwoEpycicles>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) => CustomPaint(
-            painter: DFTPainter(controller),
-          ),
-        ),
-        Positioned(
-          bottom: 10,
-          right: 10,
-          child: IconButton(
-            icon: Icon(
-              Icons.stop,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (controller.isAnimating)
-                controller.stop();
-              else
-                controller.forward();
-            },
-          ),
-        )
-      ],
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (_, __) => CustomPaint(
+        painter: _ComplexDFTPainter(controller),
+      ),
     );
   }
 }
 
-class DFTPainter extends CustomPainter {
+class _ComplexDFTPainter extends CustomPainter {
   final AnimationController animationController;
-  const DFTPainter(this.animationController);
+  _ComplexDFTPainter(this.animationController);
 
+  final rand = Random();
+  final colors = [Colors.blue, Colors.pink, Colors.yellow];
   static double time = 0;
-  static final rand = Random();
+  static int currentColorIndex = 0;
   static var path = [];
 
   @override
   void paint(Canvas canvas, Size size) {
     //This is the signal, any arbitrary digital signal/array of numbers
-    var signalX = [];
-    var signalY = [];
+    List<dynamic> fourier = [];
 
-    int skip = 30;
+    int skip = 7;
 
     for (int i = 0; i < drawing.length; i += skip) {
-      signalX.add(drawing[i].dx);
-      signalY.add(drawing[i].dy);
-      // signalX.add(0);
-      // signalY.add(0);
+      final c = Complex(drawing[i].dx, drawing[i].dy);
+
+      fourier.add(c);
     }
 
-    var fourierX = dftRealPartAlgorithm(signalX);
-    var fourierY = dftRealPartAlgorithm(signalY);
+    var fourierX = complexNumberDFTAlgorithm(fourier);
 
-    // fourierX.sort((a, b) => b['amp'] - a['amp']);
-    // fourierY.sort((a, b) => b['amp'] - a['amp']);
     fourierX.sort((a, b) => b['amp'].compareTo(a['amp']));
-    fourierY.sort((a, b) => b['amp'].compareTo(a['amp']));
 
-    draw(fourierX, fourierY, canvas);
+    draw(fourierX, canvas);
   }
 
-  List<double> epiCycles(
+  List<double> epicycles(
       double x, double y, double rotation, fourier, Canvas canvas) {
     Paint paint = Paint()
-      ..color = Colors.white.withAlpha(100)
+      ..color = Colors.white.withOpacity(0.1)
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < fourier.length; i++) {
@@ -120,29 +96,24 @@ class DFTPainter extends CustomPainter {
     return [x, y];
   }
 
-  draw(fourierX, fourierY, canvas) {
+  draw(fourier, canvas) {
     Paint paint = Paint()
       ..color = Colors.white.withAlpha(100)
       ..style = PaintingStyle.stroke;
 
-    var vx = epiCycles(450, 75, 0, fourierX, canvas);
-    var vy = epiCycles(100, 400, pi / 2, fourierY, canvas);
-    var v = [vx[0], vy[1]];
-
-    // double x = 0, y = 0;
+    // width: 804,
+    //height: 604,
+    var v = epicycles(400, 300, 0, fourier, canvas);
 
     //unshift
     path.insert(0, v);
 
-    //Moves the wave a bit to the left
-    // canvas.translate(200, 0);
-    // canvas.drawLine(Offset(x - 200, y), Offset(0, path.first), paint);
-    canvas.drawLine(Offset(vx[0], vx[1]), Offset(v[0], v[1]), paint);
-    canvas.drawLine(Offset(vy[0], vy[1]), Offset(v[0], v[1]), paint);
-
     // begin shape
-    Path pathToDraw = Path()..moveTo(0, path.first[1]);
-    paint.style = PaintingStyle.stroke;
+    Path pathToDraw = Path()..moveTo(path.first[0], path.first[1]);
+    paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..color = randomColor();
 
     for (int i = 0; i < path.length; i++) {
       pathToDraw.lineTo(path[i][0].toDouble(), path[i][1]);
@@ -150,7 +121,7 @@ class DFTPainter extends CustomPainter {
     // canvas.translate(150, )
     canvas.drawPath(pathToDraw, paint);
 
-    final dt = 2 * pi / fourierY.length;
+    final dt = 2 * pi / fourier.length;
     time += dt;
     if (time > 2 * pi) {
       time = 0;
@@ -159,6 +130,16 @@ class DFTPainter extends CustomPainter {
     } else {
       animationController.animateTo(time);
     }
+  }
+
+  Color randomColor() {
+    int newColor = rand.nextInt(3);
+    while (newColor == currentColorIndex) {
+      newColor = rand.nextInt(3);
+    }
+    currentColorIndex = newColor;
+
+    return colors[currentColorIndex];
   }
 
   @override

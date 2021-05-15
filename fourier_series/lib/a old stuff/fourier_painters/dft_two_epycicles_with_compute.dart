@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/dft_painter.dart';
-import 'package:fourier_series/fourier_painters/dft_real_part_algorithm.dart';
+import 'package:fourier_series/a%20old%20stuff/complex_dft/complex_dft_algorithm.dart';
+import 'package:fourier_series/a%20old%20stuff/fourier_painters/dft_painter.dart';
 
 class DFTWithTwoEpyciclesWithCompute extends StatefulWidget {
   const DFTWithTwoEpyciclesWithCompute(this.drawingList, this.skip)

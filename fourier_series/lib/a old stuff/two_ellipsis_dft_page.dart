@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/fourier_painters/dft_two_epycicles_with_compute.dart';
-import 'package:fourier_series/fourier_painters/my_drawing.dart';
-import 'package:fourier_series/fourier_painters/user_drawing.dart';
+import 'package:fourier_series/a%20old%20stuff/fourier_painters/dft_two_epycicles_with_compute.dart';
+import 'package:fourier_series/a%20old%20stuff/fourier_painters/my_drawing.dart';
+import 'package:fourier_series/a%20old%20stuff/fourier_painters/user_drawing.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
