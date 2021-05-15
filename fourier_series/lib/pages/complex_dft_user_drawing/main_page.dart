@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fourier_series/pages/complex_dft_user_drawing/animation_preview.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/complex_dft_painter.dart';
 import 'package:fourier_series/pages/complex_dft_user_drawing/drawing_animation.dart';
-import 'package:fourier_series/pages/complex_dft_user_drawing/user_drawing.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage();
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
                       child: Container(
                         color: Colors.black,
                         child: CustomPaint(
-                          painter: ComplexDFTUserDrawing(
+                          painter: AnimationPreview(
                             [...userDrawingList],
                             xEpicyclePosition,
                             yEpicyclePosition,
