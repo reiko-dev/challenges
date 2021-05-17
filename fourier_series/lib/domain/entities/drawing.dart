@@ -1,30 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:fourier_series/domain/entities/shape.dart';
-import 'package:get/get.dart';
 
-class Drawing extends GetxController {
-  factory Drawing({
-    List<Shape> shapes = const [],
-    double strokeWidth = 1,
-  }) {
-    return Drawing._internal([...shapes], strokeWidth);
-  }
-
-  Drawing._internal(this._shapes, this._strokeWidth);
+class Drawing {
+  Drawing(this._shapes, this._strokeWidth, this._fourierList);
 
   //properties
-  List<Shape> _shapes;
-  double _strokeWidth;
+  final List<Shape> _shapes;
+  final double _strokeWidth;
+  final List<Map<String, dynamic>> _fourierList;
 
-  List<Shape> get shapes => _shapes;
-  set shapes(List<Shape> newShapes) {
-    _shapes = newShapes;
-    update();
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Drawing &&
+          runtimeType == other.runtimeType &&
+          _strokeWidth == other._strokeWidth &&
+          listEquals(_fourierList, other._fourierList) &&
+          listEquals(_shapes, other._shapes);
 
-  double get strokeWidth => _strokeWidth;
-
-  set strokeWidth(double newStrokeWidth) {
-    _strokeWidth = newStrokeWidth;
-    update();
-  }
+  @override
+  int get hashCode =>
+      _shapes.hashCode + _strokeWidth.hashCode + _fourierList.hashCode;
 }

@@ -1,24 +1,33 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class Shape {
-  factory Shape({
+class ShapeModel {
+  factory ShapeModel({
     Color color = Colors.white,
     List<Offset> points = const [],
     double strokeWidth = 1,
   }) {
-    return Shape._internal(color, points, strokeWidth);
+    return ShapeModel._internal([...points], color, strokeWidth);
   }
-  Shape._internal(this.color, this.points, this.strokeWidth);
+
+  ShapeModel._internal(this._points, this.color, this.strokeWidth)
+      : assert(strokeWidth > 0);
 
   //Each list is painted drawing lines from the first to the last point.
-  final List<Offset> points;
-  final Color color;
-  final double strokeWidth;
+  List<Offset> _points;
+  Color color;
+  double strokeWidth;
+  //TODO: probably in the future add skipValue for each Shape.
+
+  List<Offset> get points => _points;
+
+  addPoint(Offset point) {
+    _points.add(point);
+  }
 
   @override
   operator ==(other) =>
-      other is Shape &&
+      other is ShapeModel &&
       other.runtimeType == this.runtimeType &&
       listEquals(points, other.points);
 

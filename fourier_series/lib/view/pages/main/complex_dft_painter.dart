@@ -1,21 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fourier_series/domain/controllers/drawing_controller.dart';
+import 'package:fourier_series/domain/entities/fourier.dart';
 
 enum AnimationStyle { once, loop, loopOver }
 
 class ComplexDFTPainter extends CustomPainter {
   final AnimationController animationController;
-  ComplexDFTPainter(
-    this.animationController,
-    this.data,
-    this.style,
-    this.strokeWidth,
-  );
+  ComplexDFTPainter({
+    required this.animationController,
+    required this.drawing,
+    required this.style,
+    required this.xEpicyclePosition,
+    required this.yEpicyclePosition,
+  });
 
-  final Map<String, dynamic> data;
+  // final Map<String, dynamic> drawing;
+  final DrawingController drawing;
   final AnimationStyle style;
-  final double strokeWidth;
+  double yEpicyclePosition, xEpicyclePosition;
 
   double firstEllipseRadius = 0;
 
@@ -46,14 +50,14 @@ class ComplexDFTPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     //Stores the path of the current drawing and moves to the next
-    if (path.length == data['drawing'][currentDrawingIndex].length) {
+    if (path.length == drawing.shapes[currentDrawingIndex].points.length) {
       //Só adiciona esse path se ele ainda não tiver sido adicionado anteriormente.
       if (oldPaths.length <= currentDrawingIndex) {
         oldPaths.add([...path]);
       }
       path.clear();
 
-      if (currentDrawingIndex + 1 < data['drawing'].length)
+      if (currentDrawingIndex + 1 < drawing.shapes.length)
         currentDrawingIndex++;
       else
         currentDrawingIndex = 0;
@@ -61,15 +65,13 @@ class ComplexDFTPainter extends CustomPainter {
 
     drawOldPaths(canvas);
 
-    draw(data['fourier'] as List<Map<String, dynamic>>, canvas);
+    draw(drawing.fourierList, canvas);
   }
 
   void drawOldPaths(Canvas canvas) {
     if (oldPaths.isEmpty) return;
 
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
+    final paint = Paint()..style = PaintingStyle.stroke;
 
     final List<Path> paths = [];
 
@@ -85,47 +87,47 @@ class ComplexDFTPainter extends CustomPainter {
 
     for (int i = 0; i < paths.length; i++) {
       paint.color = colors[i % colors.length];
+      paint.strokeWidth = drawing.shapes[i].strokeWidth;
       canvas.drawPath(paths[i], paint);
     }
   }
 
-  List<double> epicycles(List<Map<String, dynamic>> fourier, Canvas canvas) {
-    //TODO: define as the center of the window
-    double x = 400, y = 300;
-
+  List<double> epicycles(List<Fourier> fourier, Canvas canvas) {
     Paint paint = Paint()
       ..color = Colors.white.withOpacity(0.04)
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < fourier.length; i++) {
-      double prevX = x;
-      double prevY = y;
+      double prevX = xEpicyclePosition;
+      double prevY = yEpicyclePosition;
 
-      int freq = fourier[i]['freq'];
-      double radius = fourier[i]['amp'];
-      double phase = fourier[i]['phase'];
+      int freq = fourier[i].freq;
+      double radius = fourier[i].amp;
+      double phase = fourier[i].phase;
 
-      x += radius * cos(freq * time + phase);
-      y += radius * sin(freq * time + phase);
+      xEpicyclePosition += radius * cos(freq * time + phase);
+      yEpicyclePosition += radius * sin(freq * time + phase);
 
       ///Draws the circles
       paint..strokeWidth = 2;
       canvas.drawCircle(Offset(prevX, prevY), radius, paint);
 
       //Draw a line to the center of the next circle.
-      canvas.drawLine(Offset(prevX, prevY), Offset(x, y), paint);
+      canvas.drawLine(Offset(prevX, prevY),
+          Offset(xEpicyclePosition, yEpicyclePosition), paint);
     }
 
-    return [x, y];
+    return [xEpicyclePosition, yEpicyclePosition];
   }
 
-  draw(List<Map<String, dynamic>> fourier, canvas) {
+  draw(List<Fourier> fourier, canvas) {
     var v = epicycles(fourier, canvas);
 
     //
     //Verifica se este é o loop de retorno ao ponto de origem.
     //Se for, não deve desenhar uma linha ao ponto de origem.
-    if (path.length == 0 || path.length % fourier.length != 0)
+    //
+    if (path.length == 0 || path.length != fourier.length)
       path.insert(0, Offset(v[0], v[1]));
 
     // begin shape
@@ -133,7 +135,7 @@ class ComplexDFTPainter extends CustomPainter {
 
     Paint paint = Paint()
       ..color = const Color(0xFFFBC02D)
-      ..strokeWidth = strokeWidth
+      ..strokeWidth = drawing.strokeWidth
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < path.length; i++) {
@@ -142,11 +144,6 @@ class ComplexDFTPainter extends CustomPainter {
 
     canvas.drawPath(pathToDraw, paint);
 
-    //old
-    //final dt = 2 * pi / fourier.length;
-    //
-    //add the total from all fourier to be animated, should be something like:
-    //final dt = 2 * pi / listOfFourier.length;
     final dt = 2 * pi / fourier.length;
 
     time += dt;
@@ -156,7 +153,7 @@ class ComplexDFTPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ComplexDFTPainter old) {
-    if (oldPaths.length == data['drawing'].length) {
+    if (oldPaths.length == drawing.shapes.length) {
       switch (style) {
         case AnimationStyle.once:
           return false;

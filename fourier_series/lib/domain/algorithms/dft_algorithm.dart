@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:fourier_series/pages/complex_dft_user_drawing/complex.dart';
+import 'package:fourier_series/domain/entities/fourier.dart';
+import 'package:fourier_series/domain/entities/complex.dart';
 
+///
 ///Implementation of the mathematic formula of dft on Wikipedia:
 ///https://wikimedia.org/api/rest_v1/media/math/render/svg/18b0e4c82f095e3789e51ad8c2c6685306b5662b
 ///
@@ -10,8 +12,9 @@ import 'package:fourier_series/pages/complex_dft_user_drawing/complex.dart';
 ///1. Amplitude (the radius)
 ///2. Frequency: how many cycles trough the circle does it rotate per unit of time.
 ///3. Phase: an offset where does this wave pattern begins.
-List<Map<String, dynamic>> algorithm(List<Complex> x) {
-  List<Map<String, dynamic>> X = [];
+///
+List<Fourier> algorithm(List<Complex> x) {
+  List<Fourier> X = [];
 
   final N = x.length;
 
@@ -35,31 +38,16 @@ List<Map<String, dynamic>> algorithm(List<Complex> x) {
 
     //adds, respectively:
     //amplitud, frequency, imaginary number, phase and real number
-    X.add({
-      'amp': amp,
-      'freq': freq,
-      'im': sum.im,
-      'phase': phase,
-      're': sum.re,
-    });
+    X.add(
+      Fourier(freq: freq, amp: amp, re: sum.re, im: sum.im, phase: phase),
+    );
   }
 
   return X;
 }
 
 ///
-/// The input is a map like:
-///
-/// The function returns the map:
-/// ```dart
-/// [
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///     ...
-///     {'amp': amp, 'freq': freq, 'im': im, 'phase': phase, 're': re,},
-///  ]
-///
-/// ```
-List<Map<String, dynamic>> computeUserDrawingData(List<Offset> input) {
+List<Fourier> computeUserDrawingData(List<Offset> input) {
   //This is the signal, any arbitrary digital signal/array of numbers
   List<Complex> signal = [];
 
@@ -68,10 +56,10 @@ List<Map<String, dynamic>> computeUserDrawingData(List<Offset> input) {
     signal.add(Complex(drawing[i].dx, drawing[i].dy));
   }
 
-  var fourier = algorithm(signal);
+  var fourierList = algorithm(signal);
 
-  //Sort the values
-  fourier.sort((a, b) => b['amp'].compareTo(a['amp']));
+  //Sort the values by amplitud
+  fourierList.sort((a, b) => b.amp.compareTo(a.amp));
 
-  return fourier;
+  return fourierList;
 }
