@@ -18,14 +18,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  bool _startAnimation = false;
   bool newList = true;
 
   void onPanUpdate(DragUpdateDetails dragDetails) {
     //50.0.hp/wp Centralizes the the Epicycles
     final point = Offset(
-      dragDetails.localPosition.dx - 50.0.wp,
-      dragDetails.localPosition.dy - 50.0.hp,
+      dragDetails.localPosition.dx - 400,
+      dragDetails.localPosition.dy - 300,
     );
 
     if (newList) {
@@ -53,22 +52,24 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.blue.withAlpha(16),
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: _startAnimation
-                  ? GestureDetector(
-                      onTap: () {
-                        //TODO: If it's running an animation: stop and shows the pause icon.
-                        //Else, tries to select a Shape.
-                      },
-                      child: const DrawingAnimation(),
-                    )
-                  : GestureDetector(
-                      onPanUpdate: onPanUpdate,
-                      onPanEnd: (_) => newList = true,
-                      child: Container(
-                        color: Colors.black,
-                        child: const AnimationPreview(),
+              child: GetBuilder<DrawingController>(
+                builder: (_) => _.animationState == AnimationState.not_ready
+                    ? GestureDetector(
+                        onPanUpdate: onPanUpdate,
+                        onPanEnd: (_) => newList = true,
+                        child: Container(
+                          color: Colors.black,
+                          child: const AnimationPreview(),
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          //TODO: If it's running an animation: stop and shows the pause icon.
+                          //Else, tries to select a Shape.
+                        },
+                        child: const DrawingAnimation(),
                       ),
-                    ),
+              ),
             ),
             Spacer(),
             const BottomPanel(),

@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:fourier_series/utils/dimensions_percent.dart';
-
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 
 class AnimationPreview extends StatelessWidget {
@@ -18,8 +16,8 @@ class AnimationPreview extends StatelessWidget {
           ? CustomPaint(
               painter: AnimationPreviewPainter(
                 drawing: drawingController,
-                xEpicylePosition: 50.0.wp,
-                yEpicylePosition: 50.0.hp,
+                xEpicylePosition: 400,
+                yEpicylePosition: 300,
               ),
             )
           : Container();

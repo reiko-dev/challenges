@@ -8,17 +8,14 @@ class BottomPanel extends StatelessWidget {
   const BottomPanel();
 
   void showDrawingAnimation(DrawingController drawingController) {
-    if (drawingController.shapes.isEmpty) {
-      print('userDrawingList not valid');
-      return;
-    }
+    drawingController.startAnimation();
     ComplexDFTPainter.clean();
   }
 
   void clearDrawing(DrawingController dc) {
     dc.shapes = [];
     ComplexDFTPainter.clean();
-    dc.clearData;
+    dc.clearData();
   }
 
   @override
@@ -45,7 +42,6 @@ class BottomPanel extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
               Container(
-                // color: Colors.white,
                 width: 200,
                 height: 40,
                 child: Slider(

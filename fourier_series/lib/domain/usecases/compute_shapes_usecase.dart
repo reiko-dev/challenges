@@ -13,7 +13,7 @@ class ComputeDrawingUsecase {
 
     drawing.shapes.forEach((ShapeModel shape) {
       for (int i = 0; i < shape.points.length; i += skipValue)
-        points.addAll(shape.points);
+        points.add(shape.points[i]);
     });
 
     return await compute(computeUserDrawingData, points);

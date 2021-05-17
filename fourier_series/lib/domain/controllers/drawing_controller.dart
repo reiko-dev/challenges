@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fourier_series/view/pages/main/complex_dft_painter.dart';
 
 import 'package:get/get.dart';
 
@@ -6,6 +7,8 @@ import 'package:fourier_series/domain/entities/fourier.dart';
 import 'package:fourier_series/domain/usecases/compute_shapes_usecase.dart';
 import 'package:fourier_series/view/models/drawing_model.dart';
 import 'package:fourier_series/view/models/shape_model.dart';
+
+enum AnimationState { not_ready, loading, loaded, animating, stopped }
 
 class DrawingController extends GetxController {
   final computeDrawingUsecase = ComputeDrawingUsecase();
@@ -29,6 +32,10 @@ class DrawingController extends GetxController {
   int? _shapeIndexToDelete;
 
   int? get shapeIndexToDelete => _shapeIndexToDelete;
+
+  AnimationState _animationState = AnimationState.not_ready;
+
+  AnimationState get animationState => _animationState;
 
   set shapeIndexToDelete(int? newVal) {
     _shapeIndexToDelete = newVal;
@@ -58,7 +65,8 @@ class DrawingController extends GetxController {
     } else
       shapeIndexToDelete = shapeIndexToDelete! - 1;
 
-    print('shape to delete $shapeIndexToDelete');
+    _animationState = AnimationState.not_ready;
+
     update();
   }
 
@@ -68,6 +76,12 @@ class DrawingController extends GetxController {
     else {
       _drawing.shapes.last.addPoint(point);
       update();
+    }
+  }
+
+  void startAnimation() {
+    if (hasPoint()) {
+      computeDrawingData();
     }
   }
 
@@ -84,8 +98,9 @@ class DrawingController extends GetxController {
     }
   }
 
-  set fourierList(List<Fourier> newFourierList) {
+  void _fourierList(List<Fourier> newFourierList, AnimationState state) {
     _drawing.fourierList = newFourierList;
+    _animationState = state;
     update();
   }
 
@@ -98,22 +113,24 @@ class DrawingController extends GetxController {
     //TODO: verify if the animation is stopped, if true, do not render automatically another animation.
     //Unless the user runs the DFT pressing the Run DFT button
     _drawing.skipValue = newSkipValue;
-
-    if (fourierList.isNotEmpty)
-      computeDrawingData();
-    else
-      update();
+    _animationState = AnimationState.not_ready;
+    ComplexDFTPainter.clean();
+    update();
   }
 
   void clearData() {
     _drawing.clear();
     _shapeIndexToDelete = null;
+    _animationState = AnimationState.not_ready;
     update();
   }
 
   Future<void> computeDrawingData() async {
-    fourierList = [];
-    fourierList = await computeDrawingUsecase(_drawing, skipValue);
-    update();
+    _fourierList([], AnimationState.loading);
+
+    final fourierList =
+        await computeDrawingUsecase(_drawing, _drawing.skipValue);
+
+    _fourierList(fourierList, AnimationState.loaded);
   }
 }
