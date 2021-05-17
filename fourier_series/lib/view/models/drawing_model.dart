@@ -23,6 +23,13 @@ class DrawingModel {
   List<Fourier> fourierList;
   int skipValue;
 
+  clear() {
+    shapes = [];
+    strokeWidth = 1;
+    fourierList = [];
+    skipValue = 1;
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

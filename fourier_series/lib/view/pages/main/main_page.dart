@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fourier_series/view/models/shape_model.dart';
 
 import 'package:get/get.dart';
 import 'package:fourier_series/utils/dimensions_percent.dart';
 
-import 'package:fourier_series/domain/entities/shape.dart';
 import 'package:fourier_series/view/pages/main/animation_preview.dart';
 import 'package:fourier_series/view/pages/main/bottom_panel.dart';
 import 'package:fourier_series/view/pages/main/drawing_animation.dart';
@@ -18,33 +18,21 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final drawingController = DrawingController.i;
-  int? drawingIndexToRemove;
-
   bool _startAnimation = false;
-
-  //Centralizes the the Epicycles
-  double xEpicyclePosition = 50.0.wp, yEpicyclePosition = 50.0.hp;
-
-  int currentShapeIndex = 0;
-
-  List<Shape> shapes = [];
+  bool newList = true;
 
   void onPanUpdate(DragUpdateDetails dragDetails) {
-    drawingController.addPoint(
-      Offset(
-        dragDetails.localPosition.dx - xEpicyclePosition,
-        dragDetails.localPosition.dy - yEpicyclePosition,
-      ),
-      currentShapeIndex,
+    //50.0.hp/wp Centralizes the the Epicycles
+    final point = Offset(
+      dragDetails.localPosition.dx - 50.0.wp,
+      dragDetails.localPosition.dy - 50.0.hp,
     );
-  }
 
-  onDeleteShape(int newValue) {
-    if (newValue >= 0)
-      currentShapeIndex = newValue;
-    else
-      print('Can\'t delete a non existent shape.');
+    if (newList) {
+      DrawingController.i.addShape(ShapeModel(points: [point]));
+      newList = false;
+    } else
+      DrawingController.i.addPoint(point);
   }
 
   @override
@@ -75,10 +63,7 @@ class _MainPageState extends State<MainPage> {
                     )
                   : GestureDetector(
                       onPanUpdate: onPanUpdate,
-                      onPanEnd: (_) {
-                        drawingIndexToRemove = currentShapeIndex;
-                        currentShapeIndex++;
-                      },
+                      onPanEnd: (_) => newList = true,
                       child: Container(
                         color: Colors.black,
                         child: const AnimationPreview(),
@@ -86,7 +71,7 @@ class _MainPageState extends State<MainPage> {
                     ),
             ),
             Spacer(),
-            BottomPanel(onDeleteShape),
+            const BottomPanel(),
             Spacer(),
           ],
         ),

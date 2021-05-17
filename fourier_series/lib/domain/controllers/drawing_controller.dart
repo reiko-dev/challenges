@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/domain/entities/shape.dart';
 
 import 'package:get/get.dart';
 
@@ -26,6 +25,16 @@ class DrawingController extends GetxController {
 
   int get skipValue => _drawing.skipValue;
 
+  //Necessary for the delete shape widget
+  int? _shapeIndexToDelete;
+
+  int? get shapeIndexToDelete => _shapeIndexToDelete;
+
+  set shapeIndexToDelete(int? newVal) {
+    _shapeIndexToDelete = newVal;
+    update();
+  }
+
   set shapes(List<ShapeModel> newShapes) {
     _drawing.shapes = newShapes;
     update();
@@ -33,23 +42,32 @@ class DrawingController extends GetxController {
 
   void addShape(ShapeModel shape) {
     _drawing.shapes.add(shape);
+    _shapeIndexToDelete = _drawing.shapes.length - 1;
     update();
   }
 
   void removeShape(int shapeIndex) {
+    //TODO: stop animation
     _drawing.shapes.removeAt(shapeIndex);
+
+    if (shapeIndexToDelete == 0) {
+      if (_drawing.shapes.isEmpty)
+        shapeIndexToDelete = null;
+      else
+        shapeIndexToDelete = _drawing.shapes.length - 1;
+    } else
+      shapeIndexToDelete = shapeIndexToDelete! - 1;
+
+    print('shape to delete $shapeIndexToDelete');
     update();
   }
 
-  void addPoint(Offset point, int shapeIndex) {
-    if (shapeIndex < _drawing.shapes.length) {
-      _drawing.shapes[shapeIndex].addPoint(point);
+  void addPoint(Offset point) {
+    if (shapes.isEmpty)
+      addShape(ShapeModel(points: [point]));
+    else {
+      _drawing.shapes.last.addPoint(point);
       update();
-    } else {
-      if (shapeIndex == _drawing.shapes.length)
-        _drawing.shapes.add(ShapeModel(points: [point]));
-      else
-        print('Error when trying to add a point.');
     }
   }
 
@@ -85,8 +103,12 @@ class DrawingController extends GetxController {
       computeDrawingData();
     else
       update();
+  }
 
-    print(_drawing.skipValue);
+  void clearData() {
+    _drawing.clear();
+    _shapeIndexToDelete = null;
+    update();
   }
 
   Future<void> computeDrawingData() async {
