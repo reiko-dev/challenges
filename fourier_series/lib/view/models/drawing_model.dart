@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:fourier_series/domain/entities/fourier.dart';
 import 'package:fourier_series/view/models/shape_model.dart';
 
@@ -8,13 +9,14 @@ class DrawingModel {
     double strokeWidth = 1,
     List<Fourier> fourierList = const [],
     int skipValue = 1,
+    Offset ellipsisCenter = Offset.zero,
   }) {
     return DrawingModel._internal(
-        [...shapes], strokeWidth, [...fourierList], skipValue);
+        [...shapes], strokeWidth, [...fourierList], skipValue, ellipsisCenter);
   }
 
-  DrawingModel._internal(
-      this.shapes, this.strokeWidth, this.fourierList, this.skipValue)
+  DrawingModel._internal(this.shapes, this.strokeWidth, this.fourierList,
+      this.skipValue, this.ellipsisCenter)
       : assert(strokeWidth > 0 && skipValue > 0);
 
   //properties
@@ -22,6 +24,7 @@ class DrawingModel {
   double strokeWidth;
   List<Fourier> fourierList;
   int skipValue;
+  Offset ellipsisCenter;
 
   clear() {
     shapes = [];

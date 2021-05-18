@@ -12,14 +12,11 @@ class ComplexDFTPainter extends CustomPainter {
     required this.animationController,
     required this.drawing,
     required this.style,
-    required this.xEpicyclePosition,
-    required this.yEpicyclePosition,
   });
 
   // final Map<String, dynamic> drawing;
   final DrawingController drawing;
   final AnimationStyle style;
-  double yEpicyclePosition, xEpicyclePosition;
 
   double firstEllipseRadius = 0;
 
@@ -65,63 +62,24 @@ class ComplexDFTPainter extends CustomPainter {
 
     drawOldPaths(canvas);
 
-    draw(drawing.fourierList, canvas);
+    draw(
+      drawing.fourierList,
+      canvas,
+      drawing.ellipsisCenter.dx,
+      drawing.ellipsisCenter.dy,
+    );
   }
 
-  void drawOldPaths(Canvas canvas) {
-    if (oldPaths.isEmpty) return;
-
-    final paint = Paint()..style = PaintingStyle.stroke;
-
-    final List<Path> paths = [];
-
-    for (int i = 0; i < oldPaths.length; i++) {
-      paths.add(Path());
-
-      paths[i].moveTo(oldPaths[i].first.dx, oldPaths[i].first.dy);
-
-      oldPaths[i].forEach((Offset point) {
-        paths[i].lineTo(point.dx, point.dy);
-      });
-    }
-
-    for (int i = 0; i < paths.length; i++) {
-      paint.color = colors[i % colors.length];
-      paint.strokeWidth = drawing.shapes[i].strokeWidth;
-      canvas.drawPath(paths[i], paint);
-    }
-  }
-
-  List<double> epicycles(List<Fourier> fourier, Canvas canvas) {
-    Paint paint = Paint()
-      ..color = Colors.white.withOpacity(0.04)
-      ..style = PaintingStyle.stroke;
-
-    for (int i = 0; i < fourier.length; i++) {
-      double prevX = xEpicyclePosition;
-      double prevY = yEpicyclePosition;
-
-      int freq = fourier[i].freq;
-      double radius = fourier[i].amp;
-      double phase = fourier[i].phase;
-
-      xEpicyclePosition += radius * cos(freq * time + phase);
-      yEpicyclePosition += radius * sin(freq * time + phase);
-
-      ///Draws the circles
-      paint..strokeWidth = 2;
-      canvas.drawCircle(Offset(prevX, prevY), radius, paint);
-
-      //Draw a line to the center of the next circle.
-      canvas.drawLine(Offset(prevX, prevY),
-          Offset(xEpicyclePosition, yEpicyclePosition), paint);
-    }
-
-    return [xEpicyclePosition, yEpicyclePosition];
-  }
-
-  draw(List<Fourier> fourier, canvas) {
-    var v = epicycles(fourier, canvas);
+  ///
+  ///The x/y EpicyclePosition centers the ellipsis group in the middle of the drawing container.
+  ///
+  draw(
+    List<Fourier> fourier,
+    Canvas canvas,
+    double xEpicyclePosition,
+    double yEpicyclePosition,
+  ) {
+    var v = epicycles(fourier, canvas, xEpicyclePosition, yEpicyclePosition);
 
     //
     //Verifica se este é o loop de retorno ao ponto de origem.
@@ -149,6 +107,63 @@ class ComplexDFTPainter extends CustomPainter {
     time += dt;
 
     animationController.animateTo(time);
+  }
+
+  void drawOldPaths(Canvas canvas) {
+    if (oldPaths.isEmpty) return;
+
+    final paint = Paint()..style = PaintingStyle.stroke;
+
+    final List<Path> paths = [];
+
+    for (int i = 0; i < oldPaths.length; i++) {
+      paths.add(Path());
+
+      paths[i].moveTo(oldPaths[i].first.dx, oldPaths[i].first.dy);
+
+      oldPaths[i].forEach((Offset point) {
+        paths[i].lineTo(point.dx, point.dy);
+      });
+    }
+
+    for (int i = 0; i < paths.length; i++) {
+      paint.color = colors[i % colors.length];
+      paint.strokeWidth = drawing.shapes[i].strokeWidth;
+      canvas.drawPath(paths[i], paint);
+    }
+  }
+
+  List<double> epicycles(
+    List<Fourier> fourier,
+    Canvas canvas,
+    double xEpicyclePosition,
+    double yEpicyclePosition,
+  ) {
+    Paint paint = Paint()
+      ..color = Colors.white.withOpacity(0.04)
+      ..style = PaintingStyle.stroke;
+
+    for (int i = 0; i < fourier.length; i++) {
+      double prevX = xEpicyclePosition;
+      double prevY = yEpicyclePosition;
+
+      int freq = fourier[i].freq;
+      double radius = fourier[i].amp;
+      double phase = fourier[i].phase;
+
+      xEpicyclePosition += radius * cos(freq * time + phase);
+      yEpicyclePosition += radius * sin(freq * time + phase);
+
+      ///Draws the circles
+      paint..strokeWidth = 2;
+      canvas.drawCircle(Offset(prevX, prevY), radius, paint);
+
+      //Draw a line to the center of the next circle.
+      canvas.drawLine(Offset(prevX, prevY),
+          Offset(xEpicyclePosition, yEpicyclePosition), paint);
+    }
+
+    return [xEpicyclePosition, yEpicyclePosition];
   }
 
   @override

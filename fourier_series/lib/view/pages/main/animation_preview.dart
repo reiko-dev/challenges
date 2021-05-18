@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import 'package:fourier_series/utils/dimensions_percent.dart';
+
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 
 class AnimationPreview extends StatelessWidget {
@@ -14,11 +16,7 @@ class AnimationPreview extends StatelessWidget {
     return GetBuilder<DrawingController>(builder: (drawingController) {
       return drawingController.hasPoint()
           ? CustomPaint(
-              painter: AnimationPreviewPainter(
-                drawing: drawingController,
-                xEpicylePosition: 400,
-                yEpicylePosition: 300,
-              ),
+              painter: AnimationPreviewPainter(drawing: drawingController),
             )
           : Container();
     });
@@ -26,13 +24,8 @@ class AnimationPreview extends StatelessWidget {
 }
 
 class AnimationPreviewPainter extends CustomPainter {
-  AnimationPreviewPainter({
-    required this.xEpicylePosition,
-    required this.yEpicylePosition,
-    required this.drawing,
-  });
+  AnimationPreviewPainter({required this.drawing});
 
-  final double xEpicylePosition, yEpicylePosition;
   final DrawingController drawing;
   @override
   void paint(Canvas canvas, Size size) {
@@ -44,12 +37,11 @@ class AnimationPreviewPainter extends CustomPainter {
     drawing.shapes.forEach((shape) {
       final path = Path()
         ..moveTo(
-          shape.points.first.dx + xEpicylePosition,
-          shape.points.first.dy + yEpicylePosition,
+          shape.points.first.dx,
+          shape.points.first.dy,
         );
       shape.points.forEach((element) {
-        path.lineTo(
-            element.dx + xEpicylePosition, element.dy + yEpicylePosition);
+        path.lineTo(element.dx, element.dy);
       });
       canvas.drawPath(path, paint);
     });

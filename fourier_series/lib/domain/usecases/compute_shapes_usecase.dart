@@ -6,14 +6,20 @@ import 'package:fourier_series/view/models/shape_model.dart';
 import 'package:fourier_series/domain/algorithms/dft_algorithm.dart';
 
 class ComputeDrawingUsecase {
-  //TODO: Optmize this method.
-  //Run part of the DFT algorithm for the edited shapes and sort the new amount of values.
-  Future<List<Fourier>> call(DrawingModel drawing, int skipValue) async {
+  //
+  //TODO: Optmize this method, for running only part of the DFT algorithm when some shape is edited and sort the new amount of values.
+  //
+  Future<List<Fourier>> call(DrawingModel drawing) async {
     final List<Offset> points = [];
 
     drawing.shapes.forEach((ShapeModel shape) {
-      for (int i = 0; i < shape.points.length; i += skipValue)
-        points.add(shape.points[i]);
+      for (int i = 0; i < shape.points.length; i += drawing.skipValue)
+        points.add(
+          Offset(
+            shape.points[i].dx - drawing.ellipsisCenter.dx,
+            shape.points[i].dy - drawing.ellipsisCenter.dy,
+          ),
+        );
     });
 
     return await compute(computeUserDrawingData, points);

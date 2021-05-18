@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fourier_series/view/models/shape_model.dart';
 
 import 'package:get/get.dart';
-import 'package:fourier_series/utils/dimensions_percent.dart';
 
 import 'package:fourier_series/view/pages/main/animation_preview.dart';
 import 'package:fourier_series/view/pages/main/bottom_panel.dart';
@@ -20,11 +19,11 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   bool newList = true;
 
+  //Adds the points of the user dragging action.
   void onPanUpdate(DragUpdateDetails dragDetails) {
-    //50.0.hp/wp Centralizes the the Epicycles
     final point = Offset(
-      dragDetails.localPosition.dx - 400,
-      dragDetails.localPosition.dy - 300,
+      dragDetails.localPosition.dx,
+      dragDetails.localPosition.dy,
     );
 
     if (newList) {

@@ -38,8 +38,6 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size);
-    print('${50.0.wp}, ${50.0.hp}');
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) => GetBuilder<DrawingController>(
@@ -50,8 +48,6 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
                     animationController: controller,
                     drawing: drawingController,
                     style: AnimationStyle.loopOver,
-                    xEpicyclePosition: 400,
-                    yEpicyclePosition: 300,
                   ),
                 )
               : Center(child: CircularProgressIndicator());

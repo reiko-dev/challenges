@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/view/pages/main/complex_dft_painter.dart';
 
 import 'package:get/get.dart';
 
 import 'package:fourier_series/domain/entities/fourier.dart';
 import 'package:fourier_series/domain/usecases/compute_shapes_usecase.dart';
+
+import 'package:fourier_series/utils/dimensions_percent.dart';
+
+import 'package:fourier_series/view/pages/main/complex_dft_painter.dart';
 import 'package:fourier_series/view/models/drawing_model.dart';
 import 'package:fourier_series/view/models/shape_model.dart';
 
@@ -18,7 +21,7 @@ class DrawingController extends GetxController {
   DrawingController();
 
   //properties
-  final _drawing = DrawingModel();
+  final _drawing = DrawingModel(ellipsisCenter: Offset(50.0.wp, 50.0.hp));
 
   List<ShapeModel> get shapes => _drawing.shapes;
 
@@ -27,6 +30,8 @@ class DrawingController extends GetxController {
   List<Fourier> get fourierList => _drawing.fourierList;
 
   int get skipValue => _drawing.skipValue;
+
+  Offset get ellipsisCenter => _drawing.ellipsisCenter;
 
   //Necessary for the delete shape widget
   int? _shapeIndexToDelete;
@@ -70,6 +75,38 @@ class DrawingController extends GetxController {
     update();
   }
 
+  set strokeWidth(double newStrokeWidth) {
+    if (newStrokeWidth <= 0)
+      print('Invalid newStrokeWidth $newStrokeWidth');
+    else {
+      _drawing.strokeWidth = newStrokeWidth;
+      update();
+    }
+  }
+
+  set ellipsisCenter(Offset ellipsisCenter) {
+    //Only updates if the value entered is different from the current.
+    if (_drawing.ellipsisCenter != ellipsisCenter) {
+      _drawing.ellipsisCenter = ellipsisCenter;
+      _animationState = AnimationState.not_ready;
+      update();
+    }
+  }
+
+  //
+  //Only possible internally
+  //
+  void _setFourierList(List<Fourier> newFourierList, AnimationState state) {
+    _drawing.fourierList = newFourierList;
+    _animationState = state;
+    update();
+  }
+
+  void addFourier(Fourier fourier) {
+    _drawing.fourierList.add(fourier);
+    update();
+  }
+
   void addPoint(Offset point) {
     if (shapes.isEmpty)
       addShape(ShapeModel(points: [point]));
@@ -77,6 +114,15 @@ class DrawingController extends GetxController {
       _drawing.shapes.last.addPoint(point);
       update();
     }
+  }
+
+  set skipValue(int newSkipValue) {
+    //TODO: verify if the animation is stopped, if true, do not render automatically another animation.
+    //Unless the user runs the DFT pressing the Run DFT button
+    _drawing.skipValue = newSkipValue;
+    _animationState = AnimationState.not_ready;
+    ComplexDFTPainter.clean();
+    update();
   }
 
   void startAnimation() {
@@ -89,35 +135,6 @@ class DrawingController extends GetxController {
     return _drawing.shapes.isNotEmpty && _drawing.shapes[0].points.length > 0;
   }
 
-  set strokeWidth(double newStrokeWidth) {
-    if (newStrokeWidth <= 0)
-      print('Invalid newStrokeWidth $newStrokeWidth');
-    else {
-      _drawing.strokeWidth = newStrokeWidth;
-      update();
-    }
-  }
-
-  void _fourierList(List<Fourier> newFourierList, AnimationState state) {
-    _drawing.fourierList = newFourierList;
-    _animationState = state;
-    update();
-  }
-
-  void addFourier(Fourier fourier) {
-    _drawing.fourierList.add(fourier);
-    update();
-  }
-
-  set skipValue(int newSkipValue) {
-    //TODO: verify if the animation is stopped, if true, do not render automatically another animation.
-    //Unless the user runs the DFT pressing the Run DFT button
-    _drawing.skipValue = newSkipValue;
-    _animationState = AnimationState.not_ready;
-    ComplexDFTPainter.clean();
-    update();
-  }
-
   void clearData() {
     _drawing.clear();
     _shapeIndexToDelete = null;
@@ -126,11 +143,10 @@ class DrawingController extends GetxController {
   }
 
   Future<void> computeDrawingData() async {
-    _fourierList([], AnimationState.loading);
+    _setFourierList([], AnimationState.loading);
 
-    final fourierList =
-        await computeDrawingUsecase(_drawing, _drawing.skipValue);
+    final fourierList = await computeDrawingUsecase(_drawing);
 
-    _fourierList(fourierList, AnimationState.loaded);
+    _setFourierList(fourierList, AnimationState.loaded);
   }
 }

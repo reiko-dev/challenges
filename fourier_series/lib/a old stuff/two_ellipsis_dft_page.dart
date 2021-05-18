@@ -32,12 +32,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showDFTDrawing() {
-    userDrawingList.forEach((element) {
-      element.forEach((element) {
-        print('Offset(${element.dx},${element.dy})');
-      });
-    });
-
     _startAnimation = true;
     setState(() {});
   }
