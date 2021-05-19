@@ -13,12 +13,6 @@ class BottomPanel extends StatelessWidget {
     ComplexDFTPainter.clean();
   }
 
-  void clearDrawing(DrawingController dc) {
-    dc.shapes = [];
-    ComplexDFTPainter.clean();
-    dc.clearData();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DrawingController>(
@@ -31,7 +25,11 @@ class BottomPanel extends StatelessWidget {
           ),
           SizedBox(width: 15),
           ElevatedButton(
-            onPressed: () => clearDrawing(_),
+            onPressed: () {
+              _.shapes = [];
+              ComplexDFTPainter.clean();
+              _.clearData();
+            },
             child: Text('Clear'),
             style: ElevatedButton.styleFrom(primary: Colors.red),
           ),
