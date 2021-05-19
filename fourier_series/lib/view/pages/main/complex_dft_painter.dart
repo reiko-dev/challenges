@@ -44,19 +44,29 @@ class ComplexDFTPainter extends CustomPainter {
     oldPaths = [];
   }
 
+  bool hasFullyDrawnAShape() {
+    int actualShapeLength =
+        (drawing.shapes[currentDrawingIndex].points.length / drawing.skipValue)
+            .truncate();
+    if (drawing.shapes[currentDrawingIndex].points.length % drawing.skipValue !=
+        0) actualShapeLength++;
+
+    return path.length == actualShapeLength;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
-    //Stores the path of the current drawing and moves to the next
-    if (path.length == drawing.shapes[currentDrawingIndex].points.length) {
-      //Só adiciona esse path se ele ainda não tiver sido adicionado anteriormente.
+    if (hasFullyDrawnAShape()) {
+      //Stores the path of the current shape if it hasn't been previousle stored.
       if (oldPaths.length <= currentDrawingIndex) {
         oldPaths.add([...path]);
       }
       path.clear();
 
-      if (currentDrawingIndex + 1 < drawing.shapes.length)
+      //Moves or to the next shape (if has one more) or to the first shape
+      if (currentDrawingIndex + 1 < drawing.shapes.length) {
         currentDrawingIndex++;
-      else
+      } else
         currentDrawingIndex = 0;
     }
 
@@ -65,28 +75,22 @@ class ComplexDFTPainter extends CustomPainter {
     draw(
       drawing.fourierList,
       canvas,
-      drawing.ellipsisCenter.dx,
-      drawing.ellipsisCenter.dy,
+      drawing.ellipsisCenter,
     );
   }
 
   ///
-  ///The x/y EpicyclePosition centers the ellipsis group in the middle of the drawing container.
+  ///The x/y Epicycle Positions  position the ellipsis group in the middle of the drawing container.
   ///
   draw(
     List<Fourier> fourier,
     Canvas canvas,
-    double xEpicyclePosition,
-    double yEpicyclePosition,
+    Offset ellipsisCenter,
   ) {
-    var v = epicycles(fourier, canvas, xEpicyclePosition, yEpicyclePosition);
+    final currentPoint =
+        epicycles(fourier, canvas, ellipsisCenter.dx, ellipsisCenter.dy);
 
-    //
-    //Verifica se este é o loop de retorno ao ponto de origem.
-    //Se for, não deve desenhar uma linha ao ponto de origem.
-    //
-    if (path.length == 0 || path.length != fourier.length)
-      path.insert(0, Offset(v[0], v[1]));
+    path.insert(0, currentPoint);
 
     // begin shape
     Path pathToDraw = Path()..moveTo(path.first.dx, path.first.dy);
@@ -136,7 +140,7 @@ class ComplexDFTPainter extends CustomPainter {
     }
   }
 
-  List<double> epicycles(
+  Offset epicycles(
     List<Fourier> fourier,
     Canvas canvas,
     double xEpicyclePosition,
@@ -166,7 +170,7 @@ class ComplexDFTPainter extends CustomPainter {
           Offset(xEpicyclePosition, yEpicyclePosition), paint);
     }
 
-    return [xEpicyclePosition, yEpicyclePosition];
+    return Offset(xEpicyclePosition, yEpicyclePosition);
   }
 
   @override
