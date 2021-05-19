@@ -94,6 +94,9 @@ class ComplexDFTPainter extends CustomPainter {
     Paint paint = Paint()
       ..color = const Color(0xFFFBC02D)
       ..strokeWidth = drawing.strokeWidth
+      //TODO: add this as an attribute of shape
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < path.length; i++) {

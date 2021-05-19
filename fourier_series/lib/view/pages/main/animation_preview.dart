@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:fourier_series/utils/dimensions_percent.dart';
-
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 
 class AnimationPreview extends StatelessWidget {
@@ -32,6 +30,9 @@ class AnimationPreviewPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = drawing.strokeWidth
+      //TODO: add this as an attribute of shape
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
       ..color = Colors.white;
 
     drawing.shapes.forEach((shape) {

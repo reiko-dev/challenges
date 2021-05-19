@@ -3,8 +3,6 @@ import 'package:fourier_series/view/pages/main/complex_dft_painter.dart';
 
 import 'package:get/get.dart';
 
-import 'package:fourier_series/utils/dimensions_percent.dart';
-
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 
 class DrawingAnimation extends StatefulWidget {
