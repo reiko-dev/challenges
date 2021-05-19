@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
-import 'package:fourier_series/view/pages/main/center_panel.dart';
+import 'package:fourier_series/view/pages/main/ellipsis_position_panel.dart';
 import 'package:fourier_series/view/pages/main/complex_dft_painter.dart';
 import 'package:fourier_series/view/pages/main/delete_shape.dart';
 import 'package:get/get.dart';
@@ -83,7 +83,7 @@ class BottomPanel extends StatelessWidget {
           SizedBox(width: 20),
 
           //Sets the center point for the ellipsis group.
-          const CenterPanel(),
+          const EllipsisPositionPanel(),
 
           // DeleteDrawingWidget(onDeleteShape),
           const DeleteShape(),
