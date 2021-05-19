@@ -2,34 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 import 'package:get/get.dart';
 
-class CenterPanel extends StatelessWidget {
+class CenterPanel extends StatefulWidget {
   const CenterPanel({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final dxController = TextEditingController();
-    final dyController = TextEditingController();
-    print('Center panel rebuilded');
+  _CenterPanelState createState() => _CenterPanelState();
+}
 
+class _CenterPanelState extends State<CenterPanel> {
+  final dxController = TextEditingController();
+  final dyController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: 75,
       decoration: BoxDecoration(
         color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.blue,
-        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text('Center:'),
           Container(
             // color: Colors.red,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   height: 30,
@@ -51,7 +49,6 @@ class CenterPanel extends StatelessWidget {
 
                       dxController.addListener(() {
                         final dx = double.tryParse(dxController.text);
-
                         if (dx == null) {
                           print(
                               'Error ellipsisCenter.dx value ${dyController.text} not valid.');
