@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
+import 'package:fourier_series/view/pages/main/my_color_picker.dart';
 import 'package:get/get.dart';
 
 class SelectedShape extends StatelessWidget {
@@ -23,20 +24,20 @@ class SelectedShape extends StatelessWidget {
               'Shape actions:',
               style: Theme.of(context).textTheme.headline4,
             ).paddingSymmetric(horizontal: 5),
-            GetBuilder<DrawingController>(
-              builder: (_) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: DropdownButton<int>(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 60,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: GetBuilder<DrawingController>(
+                    builder: (_) {
+                      return DropdownButton<int>(
                         onChanged: (val) => _.selectedShapeIndex = val,
                         value: _.selectedShapeIndex,
                         items: List.generate(
@@ -48,19 +49,18 @@ class SelectedShape extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_.selectedShapeIndex != null)
-                          _.removeShape(_.selectedShapeIndex!);
-                      },
-                      child: Text('Delete'),
-                    ),
-                  ],
-                );
-              },
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () => DrawingController.i.removeShape(),
+                  child: Text('Delete'),
+                ),
+                SizedBox(width: 20),
+                const MyColorPicker(),
+              ],
             ),
           ],
         ),

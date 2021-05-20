@@ -54,6 +54,11 @@ class DrawingController extends GetxController {
     update();
   }
 
+  set selectedShapeColor(Color color) {
+    _drawing.shapes[selectedShapeIndex!].color = color;
+    update();
+  }
+
   set shapes(List<ShapeModel> newShapes) {
     _drawing.shapes = newShapes;
     update();
@@ -63,16 +68,28 @@ class DrawingController extends GetxController {
     _drawing.shapes.add(shape);
     _selectedShapeIndex = _drawing.shapes.length - 1;
 
-    //Sets the value of the previous selected shape to the current selected Shape.
-    if (_drawing.shapes.length > 1)
-      _drawing.shapes[_selectedShapeIndex!].strokeWidth =
-          _drawing.shapes[_selectedShapeIndex! - 1].strokeWidth;
+    //Sets the values of the previous selected shape to the current selected Shape.
+    if (_drawing.shapes.length > 1) {
+      // _drawing.shapes[_selectedShapeIndex!].strokeWidth =
+      //     _drawing.shapes[_selectedShapeIndex! - 1].strokeWidth;
+      _drawing.shapes[_selectedShapeIndex!]
+        ..strokeWidth = _drawing.shapes[_selectedShapeIndex! - 1].strokeWidth
+        ..color = _drawing.shapes[_selectedShapeIndex! - 1].color;
+    }
     update();
   }
 
-  void removeShape(int index) {
+  //Removes the shape at the specified index, if it was specified. Else, removes the actual selected shape index.
+  void removeShape({int? index}) {
+    if (index == null) {
+      if (selectedShapeIndex == null)
+        return;
+      else
+        index = selectedShapeIndex;
+    }
+
     //TODO: stop animation
-    _drawing.shapes.removeAt(index);
+    _drawing.shapes.removeAt(index!);
 
     if (selectedShapeIndex == 0) {
       if (_drawing.shapes.isEmpty) {

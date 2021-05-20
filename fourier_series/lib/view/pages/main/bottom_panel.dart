@@ -109,7 +109,6 @@ class BottomPanel extends StatelessWidget {
 
                 SizedBox(width: 20),
 
-                // DeleteDrawingWidget(onDeleteShape),
                 const SelectedShape(),
               ],
             ),
