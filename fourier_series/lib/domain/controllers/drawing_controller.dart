@@ -23,9 +23,18 @@ class DrawingController extends GetxController {
   //properties
   final _drawing = DrawingModel(ellipsisCenter: Offset(50.0.wp, 50.0.hp));
 
+  //Necessary for the delete shape widget
+  int? _selectedShapeIndex;
+
+  //Getters
   List<ShapeModel> get shapes => _drawing.shapes;
 
-  double get strokeWidth => _drawing.strokeWidth;
+  ShapeModel? get selectedShape {
+    if (_selectedShapeIndex != null)
+      return _drawing.shapes[_selectedShapeIndex!];
+    else
+      return null;
+  }
 
   List<Fourier> get fourierList => _drawing.fourierList;
 
@@ -33,17 +42,15 @@ class DrawingController extends GetxController {
 
   Offset get ellipsisCenter => _drawing.ellipsisCenter;
 
-  //Necessary for the delete shape widget
-  int? _shapeIndexToDelete;
-
-  int? get shapeIndexToDelete => _shapeIndexToDelete;
+  int? get selectedShapeIndex => _selectedShapeIndex;
 
   AnimationState _animationState = AnimationState.not_ready;
 
   AnimationState get animationState => _animationState;
 
-  set shapeIndexToDelete(int? newVal) {
-    _shapeIndexToDelete = newVal;
+  //Setters
+  set selectedShapeIndex(int? newVal) {
+    _selectedShapeIndex = newVal;
     update();
   }
 
@@ -54,32 +61,38 @@ class DrawingController extends GetxController {
 
   void addShape(ShapeModel shape) {
     _drawing.shapes.add(shape);
-    _shapeIndexToDelete = _drawing.shapes.length - 1;
+    _selectedShapeIndex = _drawing.shapes.length - 1;
+
+    //Sets the value of the previous selected shape to the current selected Shape.
+    if (_drawing.shapes.length > 1)
+      _drawing.shapes[_selectedShapeIndex!].strokeWidth =
+          _drawing.shapes[_selectedShapeIndex! - 1].strokeWidth;
     update();
   }
 
-  void removeShape(int shapeIndex) {
+  void removeShape(int index) {
     //TODO: stop animation
-    _drawing.shapes.removeAt(shapeIndex);
+    _drawing.shapes.removeAt(index);
 
-    if (shapeIndexToDelete == 0) {
-      if (_drawing.shapes.isEmpty)
-        shapeIndexToDelete = null;
-      else
-        shapeIndexToDelete = _drawing.shapes.length - 1;
+    if (selectedShapeIndex == 0) {
+      if (_drawing.shapes.isEmpty) {
+        selectedShapeIndex = null;
+      } else
+        selectedShapeIndex = _drawing.shapes.length - 1;
     } else
-      shapeIndexToDelete = shapeIndexToDelete! - 1;
+      selectedShapeIndex = selectedShapeIndex! - 1;
 
     _animationState = AnimationState.not_ready;
 
     update();
   }
 
+  //Must not be possible to change if there's not a shape drawn.
   set strokeWidth(double newStrokeWidth) {
     if (newStrokeWidth <= 0)
       print('Invalid newStrokeWidth $newStrokeWidth');
     else {
-      _drawing.strokeWidth = newStrokeWidth;
+      _drawing.shapes[selectedShapeIndex!].strokeWidth = newStrokeWidth;
       update();
     }
   }
@@ -137,7 +150,7 @@ class DrawingController extends GetxController {
 
   void clearData() {
     _drawing.clear();
-    _shapeIndexToDelete = null;
+    _selectedShapeIndex = null;
     _animationState = AnimationState.not_ready;
     update();
   }

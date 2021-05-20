@@ -39,12 +39,12 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) => GetBuilder<DrawingController>(
-        builder: (drawingController) {
-          return drawingController.animationState != AnimationState.loading
+        builder: (dc) {
+          return dc.animationState != AnimationState.loading
               ? CustomPaint(
                   painter: ComplexDFTPainter(
                     animationController: controller,
-                    drawing: drawingController,
+                    drawing: dc,
                     style: AnimationStyle.loopOver,
                   ),
                 )

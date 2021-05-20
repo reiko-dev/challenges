@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fourier_series/view/models/shape_model.dart';
 
 import 'package:get/get.dart';
 
@@ -9,29 +8,8 @@ import 'package:fourier_series/view/pages/main/drawing_animation.dart';
 
 import 'package:fourier_series/domain/controllers/drawing_controller.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends StatelessWidget {
   const MainPage();
-
-  @override
-  State<StatefulWidget> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  bool newList = true;
-
-  //Adds the points of the user dragging action.
-  void onPanUpdate(DragUpdateDetails dragDetails) {
-    final point = Offset(
-      dragDetails.localPosition.dx,
-      dragDetails.localPosition.dy,
-    );
-
-    if (newList) {
-      DrawingController.i.addShape(ShapeModel(points: [point]));
-      newList = false;
-    } else
-      DrawingController.i.addPoint(point);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +31,7 @@ class _MainPageState extends State<MainPage> {
               ),
               child: GetBuilder<DrawingController>(
                 builder: (_) => _.animationState == AnimationState.not_ready
-                    ? GestureDetector(
-                        onPanUpdate: onPanUpdate,
-                        onPanEnd: (_) => newList = true,
-                        child: Container(
-                          color: Colors.black,
-                          child: const AnimationPreview(),
-                        ),
-                      )
+                    ? const AnimationPreview()
                     : GestureDetector(
                         onTap: () {
                           //TODO: If it's running an animation: stop and shows the pause icon.

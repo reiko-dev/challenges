@@ -68,13 +68,16 @@ class BottomPanel extends StatelessWidget {
                 width: 200,
                 height: 40,
                 child: Slider(
-                    value: _.strokeWidth,
-                    label: '${_.strokeWidth}',
-                    activeColor: Colors.purple,
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    onChanged: (newWidth) => _.strokeWidth = newWidth),
+                  value: _.selectedShape?.strokeWidth ?? 1,
+                  label: '${_.selectedShape?.strokeWidth ?? 1}',
+                  activeColor: Colors.purple,
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  onChanged: _.selectedShape == null
+                      ? null
+                      : (value) => _.strokeWidth = value,
+                ),
               ),
             ],
           ),

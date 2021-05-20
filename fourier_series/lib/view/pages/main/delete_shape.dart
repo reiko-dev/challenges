@@ -14,13 +14,13 @@ class DeleteShape extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () {
-                if (_.shapeIndexToDelete != null)
-                  _.removeShape(_.shapeIndexToDelete!);
+                if (_.selectedShapeIndex != null)
+                  _.removeShape(_.selectedShapeIndex!);
               },
               child: Text('Delete Shape'),
             ),
             Container(
-              width: 50,
+              width: 60,
               height: 35,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -28,8 +28,8 @@ class DeleteShape extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: DropdownButton<int>(
-                onChanged: (val) => _.shapeIndexToDelete = val,
-                value: _.shapeIndexToDelete,
+                onChanged: (val) => _.selectedShapeIndex = val,
+                value: _.selectedShapeIndex,
                 items: List.generate(
                   _.shapes.length,
                   (index) => DropdownMenuItem<int>(

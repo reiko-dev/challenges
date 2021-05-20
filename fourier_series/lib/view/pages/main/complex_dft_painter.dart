@@ -14,22 +14,10 @@ class ComplexDFTPainter extends CustomPainter {
     required this.style,
   });
 
-  // final Map<String, dynamic> drawing;
   final DrawingController drawing;
   final AnimationStyle style;
 
   double firstEllipseRadius = 0;
-
-  final colors = [
-    Colors.blue,
-    Colors.green,
-    Colors.purple,
-    Colors.teal,
-    Colors.pink,
-    Colors.red,
-    Colors.white,
-    Colors.orange,
-  ];
 
   static double time = 0;
   static List<Offset> path = [];
@@ -96,8 +84,8 @@ class ComplexDFTPainter extends CustomPainter {
     Path pathToDraw = Path()..moveTo(path.first.dx, path.first.dy);
 
     Paint paint = Paint()
-      ..color = const Color(0xFFFBC02D)
-      ..strokeWidth = drawing.strokeWidth
+      ..color = const Color(0xFFFCC02D)
+      ..strokeWidth = drawing.shapes[currentDrawingIndex].strokeWidth
       //TODO: add this as an attribute of shape
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
@@ -134,7 +122,7 @@ class ComplexDFTPainter extends CustomPainter {
     }
 
     for (int i = 0; i < paths.length; i++) {
-      paint.color = colors[i % colors.length];
+      paint.color = drawing.shapes[i].color;
       paint.strokeWidth = drawing.shapes[i].strokeWidth;
       canvas.drawPath(paths[i], paint);
     }
@@ -161,6 +149,9 @@ class ComplexDFTPainter extends CustomPainter {
       xEpicyclePosition += radius * cos(freq * time + phase);
       yEpicyclePosition += radius * sin(freq * time + phase);
 
+      ///TODO: Use a DFTController to hold the data of the DFT painting part
+      ///Like: ellipsis colors, lines colors, (bool) withArrow on the lines from the center of the ellipsis, strokeWidth of the lines and
+      ///a custom shape to be drawn on the current point.
       ///Draws the circles
       paint..strokeWidth = 2;
       canvas.drawCircle(Offset(prevX, prevY), radius, paint);
