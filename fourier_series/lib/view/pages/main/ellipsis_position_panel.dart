@@ -10,15 +10,19 @@ class EllipsisPositionPanel extends StatelessWidget {
     final pef = Get.put(PositionEllipsisFormController());
 
     return Container(
-      height: 75,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.blue,
+        ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text('Center:'),
+          Text(
+            'Ellipsis Center:',
+            style: Theme.of(context).textTheme.headline4,
+          ),
           Container(
             child: Form(
               key: pef.key,
@@ -39,10 +43,7 @@ class EllipsisPositionPanel extends StatelessWidget {
                       decoration: InputDecoration(border: OutlineInputBorder()),
                       textAlign: TextAlign.center,
                       maxLength: 4,
-                      style: TextStyle(
-                        color: const Color(0xFF2196F3),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                       keyboardType:
                           TextInputType.numberWithOptions(signed: true),
                     ),
@@ -62,10 +63,7 @@ class EllipsisPositionPanel extends StatelessWidget {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(border: OutlineInputBorder()),
                       maxLength: 4,
-                      style: TextStyle(
-                        color: const Color(0xFF2196F3),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                       keyboardType:
                           TextInputType.numberWithOptions(signed: true),
                     ),

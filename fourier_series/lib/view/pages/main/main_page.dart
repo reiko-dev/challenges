@@ -42,7 +42,7 @@ class MainPage extends StatelessWidget {
               ),
             ),
             Spacer(),
-            const BottomPanel(),
+            BottomPanel(),
             Spacer(),
           ],
         ),
