@@ -7,13 +7,13 @@ import 'package:fourier_series/domain/entities/fourier.dart';
 enum AnimationStyle { once, loop, loopOver }
 
 class ComplexDFTPainter extends CustomPainter {
-  final AnimationController animationController;
   ComplexDFTPainter({
-    required this.animationController,
     required this.drawing,
     required this.style,
+    required this.startAnimation,
   });
 
+  final Function startAnimation;
   final DrawingController drawing;
   final AnimationStyle style;
 
@@ -98,10 +98,9 @@ class ComplexDFTPainter extends CustomPainter {
     canvas.drawPath(pathToDraw, paint);
 
     final dt = 2 * pi / fourier.length;
-
     time += dt;
 
-    animationController.animateTo(time);
+    startAnimation();
   }
 
   void drawOldPaths(Canvas canvas) {

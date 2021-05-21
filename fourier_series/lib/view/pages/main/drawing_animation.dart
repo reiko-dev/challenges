@@ -16,11 +16,13 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
+  bool isStarted = false;
+
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(milliseconds: 3500),
+      duration: Duration(seconds: 1),
       lowerBound: 0,
       upperBound: 1,
       vsync: this,
@@ -34,23 +36,37 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
     super.dispose();
   }
 
+  void startAnimation() {
+    if (!isStarted) {
+      controller.repeat();
+      isStarted = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (_, __) => GetBuilder<DrawingController>(
-        builder: (dc) {
-          return dc.animationState != AnimationState.loading
-              ? CustomPaint(
+    return GetBuilder<DrawingController>(
+      builder: (dc) {
+        if (dc.animationState == AnimationState.loading)
+          return Center(child: CircularProgressIndicator());
+
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (_, __) {
+            return Stack(
+              children: [
+                CustomPaint(
                   painter: ComplexDFTPainter(
-                    animationController: controller,
                     drawing: dc,
                     style: AnimationStyle.loopOver,
+                    startAnimation: startAnimation,
                   ),
-                )
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
