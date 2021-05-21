@@ -59,7 +59,6 @@ class AnimationPreviewPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = dc.selectedShape!.strokeWidth
-      //TODO: add this as an attribute of shape
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..color = Colors.white;

@@ -21,7 +21,7 @@ class DrawingController extends GetxController {
   DrawingController();
 
   //properties
-  final _drawing = DrawingModel(ellipsisCenter: Offset(50.0.wp, 50.0.hp));
+  final _drawing = DrawingModel(ellipsisCenter: Offset(45.0.wp, 40.0.hp));
 
   //Necessary for the delete shape widget
   int? _selectedShapeIndex;
@@ -64,6 +64,11 @@ class DrawingController extends GetxController {
     update();
   }
 
+  set animationState(AnimationState state) {
+    _animationState = state;
+    update();
+  }
+
   void addShape(ShapeModel shape) {
     _drawing.shapes.add(shape);
     _selectedShapeIndex = _drawing.shapes.length - 1;
@@ -88,7 +93,6 @@ class DrawingController extends GetxController {
         index = selectedShapeIndex;
     }
 
-    //TODO: stop animation
     _drawing.shapes.removeAt(index!);
 
     if (selectedShapeIndex == 0) {
@@ -147,8 +151,6 @@ class DrawingController extends GetxController {
   }
 
   set skipValue(int newSkipValue) {
-    //TODO: verify if the animation is stopped, if true, do not render automatically another animation.
-    //Unless the user runs the DFT pressing the Run DFT button
     _drawing.skipValue = newSkipValue;
     _animationState = AnimationState.not_ready;
     ComplexDFTPainter.clean();

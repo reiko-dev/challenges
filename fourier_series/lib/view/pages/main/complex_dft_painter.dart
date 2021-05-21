@@ -83,17 +83,17 @@ class ComplexDFTPainter extends CustomPainter {
     // begin shape
     Path pathToDraw = Path()..moveTo(path.first.dx, path.first.dy);
 
-    //TODO: add  strokeCap and strokeJoin as attributes of shape.
-    Paint paint = Paint()
+    for (int i = 0; i < path.length; i++) {
+      pathToDraw.lineTo(path[i].dx.toDouble(), path[i].dy);
+    }
+    //end shape
+
+    final paint = Paint()
       ..color = drawing.shapes[currentDrawingIndex].color
       ..strokeWidth = drawing.shapes[currentDrawingIndex].strokeWidth
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
-
-    for (int i = 0; i < path.length; i++) {
-      pathToDraw.lineTo(path[i].dx.toDouble(), path[i].dy);
-    }
 
     canvas.drawPath(pathToDraw, paint);
 
@@ -134,7 +134,7 @@ class ComplexDFTPainter extends CustomPainter {
     double yEpicyclePosition,
   ) {
     Paint paint = Paint()
-      ..color = Colors.white.withOpacity(0.04)
+      ..color = Colors.white.withOpacity(0.13)
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < fourier.length; i++) {

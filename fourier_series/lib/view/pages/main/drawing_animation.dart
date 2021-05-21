@@ -58,7 +58,7 @@ class _ComplexDFTUserDrawerState extends State<DrawingAnimation>
                 CustomPaint(
                   painter: ComplexDFTPainter(
                     drawing: dc,
-                    style: AnimationStyle.loopOver,
+                    style: AnimationStyle.loop,
                     startAnimation: startAnimation,
                   ),
                 ),

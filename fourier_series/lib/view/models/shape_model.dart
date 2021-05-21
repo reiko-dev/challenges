@@ -17,7 +17,6 @@ class ShapeModel {
   List<Offset> _points;
   Color color;
   double strokeWidth;
-  //TODO: probably in the future add skipValue for each Shape.
 
   List<Offset> get points => _points;
 

@@ -6,9 +6,6 @@ import 'package:fourier_series/view/models/shape_model.dart';
 import 'package:fourier_series/domain/algorithms/dft_algorithm.dart';
 
 class ComputeDrawingUsecase {
-  //
-  //TODO: Optmize this method, for running only part of the DFT algorithm when some shape is edited and sort the new amount of values.
-  //
   Future<List<Fourier>> call(DrawingModel drawing) async {
     final List<Offset> points = [];
 
